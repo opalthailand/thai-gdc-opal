@@ -379,6 +379,7 @@ def _record_type_process(data_dict):
         record_df["owner_org"] = data_dict['owner_org']
         record_df["private"] = True
         record_df["allow_harvest"] = "False"
+        record_df["allow_cdp"] = "False"
         record_df['tag_string'] = record_df['tag_string'].str.split(',').apply(lambda x: [e.strip() for e in x]).tolist()
 
         record_df["created_date"] = pd.to_datetime((pd.to_numeric(record_df["created_date"].str.slice(stop=4), errors='coerce').astype('Int64')-543).astype(str)+record_df["created_date"].str.slice(start=4), errors='coerce').astype(str)
@@ -527,6 +528,7 @@ def _stat_type_process(data_dict):
         stat_df["owner_org"] = data_dict['owner_org']
         stat_df["private"] = True
         stat_df["allow_harvest"] = "False"
+        stat_df["allow_cdp"] = "False"
         stat_df['tag_string'] = stat_df['tag_string'].str.split(',').apply(lambda x: [e.strip() for e in x]).tolist()
 
         stat_df["last_updated_date"] = pd.to_datetime((pd.to_numeric(stat_df["last_updated_date"].str.slice(stop=4), errors='coerce').astype('Int64')-543).astype(str)+stat_df["last_updated_date"].str.slice(start=4), errors='coerce').astype(str)
@@ -687,6 +689,7 @@ def _gis_type_process(data_dict):
         gis_df["owner_org"] = data_dict['owner_org']
         gis_df["private"] = True
         gis_df["allow_harvest"] = "False"
+        gis_df["allow_cdp"] = "False"
         gis_df['tag_string'] = gis_df['tag_string'].str.split(',').apply(lambda x: [e.strip() for e in x]).tolist()
 
         gis_df["last_updated_date"] = pd.to_datetime((pd.to_numeric(gis_df["last_updated_date"].str.slice(stop=4), errors='coerce').astype('Int64')-543).astype(str)+gis_df["last_updated_date"].str.slice(start=4), errors='coerce').astype(str)
@@ -833,6 +836,7 @@ def _multi_type_process(data_dict):
         multi_df["owner_org"] = data_dict['owner_org']
         multi_df["private"] = True
         multi_df["allow_harvest"] = "False"
+        multi_df["allow_cdp"] = "False"
         multi_df['tag_string'] = multi_df['tag_string'].str.split(',').apply(lambda x: [e.strip() for e in x]).tolist()
 
         multi_df["created_date"] = pd.to_datetime((pd.to_numeric(multi_df["created_date"].str.slice(stop=4), errors='coerce').astype('Int64')-543).astype(str)+multi_df["created_date"].str.slice(start=4), errors='coerce').astype(str)
@@ -981,6 +985,7 @@ def _other_type_process(data_dict):
         other_df["owner_org"] = data_dict['owner_org']
         other_df["private"] = True
         other_df["allow_harvest"] = "False"
+        other_df["allow_cdp"] = "False"
         other_df['tag_string'] = other_df['tag_string'].str.split(',').apply(lambda x: [e.strip() for e in x]).tolist()
 
         other_df["created_date"] = pd.to_datetime((pd.to_numeric(other_df["created_date"].str.slice(stop=4), errors='coerce').astype('Int64')-543).astype(str)+other_df["created_date"].str.slice(start=4), errors='coerce').astype(str)

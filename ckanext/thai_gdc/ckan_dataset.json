@@ -146,7 +146,7 @@
           }
         }
       ],
-      "form_snippet": "allow_harvest.html",
+      "form_snippet": "allow_cdp.html",
       "display_snippet": "select.html",
       "form_data_type": [
         "ข้อมูลระเบียน",
