@@ -1,0 +1,87 @@
+{% extends "package/snippets/additional_info.html" %}
+
+{%- set exclude_fields = [
+    'id',
+    'title',
+    'name',
+    'notes',
+    'tag_string',
+    'owner_org',
+    'reference_url_catalog',
+    ] -%}
+    
+        {% block package_additional_info %}
+
+        {% set catalog_org_type = h.thai_gdc_get_catalog_org_type() %}
+        {% if catalog_org_type == 'area_based' or catalog_org_type == 'local_government' %}
+        <tr>
+          <th scope="row" class="dataset-label">
+            {{ _('Reference URL Catalog') }}</th>
+          <td class="dataset-details"><a href="{{ pkg_dict.reference_url_catalog }}" target="_blank">{{ pkg_dict.reference_url_catalog }}</a></td>
+        </tr>
+        {% endif %}
+
+        {% resource "thai_gdc/js/gdc_agency_hint_view.js" %}
+        {% resource "thai_gdc/css/gdc_agency_hint_view.css" %}
+        {% set gdcatalog_portal_url = h.thai_gdc_get_gdcatalog_portal_url() %}
+        <tr>
+            <th colspan="2" id="gdc_hint_module_controls"
+                data-module="gdc_agency_hint_view"
+                data-module-des_url="{{ gdcatalog_portal_url }}/gdplus/metadata_desc.json"></th>
+        </tr>
+
+
+        {%- for field in schema.dataset_fields -%}
+        {% set form_data_type = field.form_data_type %}
+        {%- if field.field_name not in exclude_fields
+            and field.display_snippet is not none -%}
+            {% if pkg_dict.data_type in form_data_type %}
+          <tr>
+            <th scope="row" class="dataset-label" id="field-{{field.field_name}}">
+              {% if field.required %}* {% endif %}
+              {{ h.scheming_language_text(field.label) }}</th>
+            <td class="dataset-details"{%
+              if field.display_property %} property="{{ field.display_property
+              }}"{% endif %}>{%- snippet 'scheming/snippets/display_field.html',
+              field=field, data=pkg_dict, schema=schema -%}</td>
+          </tr>
+          {% endif %}
+        {%- endif -%}
+      {%- endfor -%}
+      {% if h.check_access('package_update',{'id':pkg_dict.id}) %}
+        <tr>
+          <th id="field-system_state" scope="row" class="dataset-label">{{ _("State") }}</th>
+          <td class="dataset-details">{{ _(pkg_dict.state) }}</td>
+        </tr>
+      {% endif %}
+        {% if pkg_dict.creator_user_id %}
+        {%- set displayname = h.thai_gdc_get_user_display_name(pkg_dict.creator_user_id) %}
+          <tr>
+            <th scope="row" class="dataset-label">{{ _("Create by") }}</th>
+            <td class="dataset-details">
+              {% if displayname == 'default' %}
+                การนำเข้าโดย templete
+              {% else %}
+                {{ h.linked_user(pkg_dict.creator_user_id,0,0) }}
+              {% endif %}
+            </td>
+          </tr>
+        {% endif %}
+        {% if pkg_dict.metadata_created %}
+          <tr>
+            <th id="field-system_created" scope="row" class="dataset-label">{{ _("Created") }}</th>
+            <td class="dataset-details">
+                {{ h.thai_gdc_day_thai(h.date_str_to_datetime(pkg_dict.metadata_created)) }}
+            </td>
+          </tr>
+        {% endif %}
+        {% if pkg_dict.metadata_modified %}
+          <tr>
+            <th id="field-system_modified" scope="row" class="dataset-label">{{ _("Last Updated") }}</th>
+            <td class="dataset-details">
+                {{ h.thai_gdc_day_thai(h.date_str_to_datetime(pkg_dict.metadata_modified)) }}
+            </td>
+          </tr>
+        {% endif %}
+        {% endblock %}
+ 
