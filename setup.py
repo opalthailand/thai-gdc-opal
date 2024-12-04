@@ -14,11 +14,11 @@ setup(
     url='',
     license='',
     packages=find_packages(exclude=['ez_setup', 'examples', 'tests']),
-    namespace_packages=['ckanext', 'ckanext.cdp'],
+    namespace_packages=['ckanext.cdp'],
     include_package_data=True,
     zip_safe=False,
     install_requires=[
-        'requests' #  For making HTTP requests
+        'requests'
     ],
     entry_points='''
         [ckan.plugins]
@@ -29,7 +29,7 @@ setup(
     message_extractors={
         'ckanext': [
             ('**.py', 'python', None),
-            ('**.js', 'javascript', None),
+            ('**.js', 'javascript', None),  # Even if not using JS, keep this for future flexibility
             ('**/templates/**.html', 'ckan', None),
         ],
     }
