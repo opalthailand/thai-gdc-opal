@@ -1,7 +1,8 @@
 import ckan.plugins as p
 import ckan.plugins.toolkit as tk
 import logging
-from ckanext.cdp import actions, auth, constants
+from ckanext.cdp import constants
+from ckanext.cdp import actions, auth
 
 
 log = logging.getLogger(__name__)
