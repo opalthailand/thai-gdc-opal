@@ -1,5 +1,0 @@
-pandas
-Unidecode
-six
-xlrd
-
