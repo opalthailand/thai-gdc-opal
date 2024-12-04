@@ -1,36 +1,28 @@
 from setuptools import setup, find_packages
-
+import sys, os
+version = '0.1'
 setup(
-    name='ckanext-cdp',
-    version='0.1',
-    description="CKAN Extension - CDP Integration",
-    long_description="""
-    CKAN extension to push resource data to CDP.
-    """,
-    classifiers=[],
-    keywords='',
-    author='Your Name',
-    author_email='your.email@example.com',
-    url='',
-    license='',
-    packages=find_packages(exclude=['ez_setup', 'examples', 'tests']),
-    namespace_packages=['ckanext.cdp'],
-    include_package_data=True,
-    zip_safe=False,
-    install_requires=[
+	name='ckanext-linenotify',
+	version=version,
+	description="LINE Notify plugin",
+	long_description="""\
+	""",
+	classifiers=[],
+	keywords='',
+	author='Your Name',  # Update this
+	author_email='your.email@example.com',  # Update this
+	url='',
+	license='',
+	packages=find_packages(exclude=['ez_setup', 'examples', 'tests']),
+	namespace_packages=['ckanext', 'ckanext.linenotify'],
+	include_package_data=True,
+	zip_safe=False,
+	install_requires=[
         'requests'
-    ],
-    entry_points='''
+	],
+	entry_points=\
+	"""
         [ckan.plugins]
-        cdp=ckanext.cdp.plugin:CDPPlugin
-        [babel.extractors]
-        ckan = ckan.lib.extract:extract_ckan
-    ''',
-    message_extractors={
-        'ckanext': [
-            ('**.py', 'python', None),
-            ('**.js', 'javascript', None),  # Even if not using JS, keep this for future flexibility
-            ('**/templates/**.html', 'ckan', None),
-        ],
-    }
+	linenotify=ckanext.linenotify.plugin:LINENotifyPlugin
+	""",
 )

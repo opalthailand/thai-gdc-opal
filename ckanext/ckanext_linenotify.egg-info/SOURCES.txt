@@ -1,0 +1,11 @@
+setup.py
+ckanext/__init__.py  # Unchanged, but included for completeness
+ckanext/linenotify/__init__.py
+ckanext/linenotify/plugin.py
+ckanext_linenotify.egg-info/PKG-INFO
+ckanext_linenotify.egg-info/SOURCES.txt
+ckanext_linenotify.egg-info/dependency_links.txt
+ckanext_linenotify.egg-info/entry_points.txt
+ckanext_linenotify.egg-info/namespace_packages.txt
+ckanext_linenotify.egg-info/not-zip-safe
+ckanext_linenotify.egg-info/top_level.txt
