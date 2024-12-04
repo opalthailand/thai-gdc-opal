@@ -11,12 +11,13 @@ setup(
     author_email='',
     url='',
     license='',
+    # The crucial fix is here: correct directory structure and find_packages()
     packages=find_packages(exclude=['ez_setup', 'examples', 'tests']),
     namespace_packages=['ckanext', 'ckanext.cdp'],
     include_package_data=True,
     zip_safe=False,
     install_requires=[
-        'requests'  # Add requests to install_requires
+        'requests'
     ],
     entry_points='''
         [ckan.plugins]
