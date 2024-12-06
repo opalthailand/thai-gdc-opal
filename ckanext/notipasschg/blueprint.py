@@ -118,7 +118,7 @@ class EditView(MethodView):
                 }
                 # msg = "User "+str(g.userobj.name) + " updated their password on" + str(updated) + "."
                 msg = "hello"
-                response = requests.post(url, headers=headers, data={'message': msg})
+                # response = requests.post(url, headers=headers, data={'message': msg})
 
                 # # Logging the notification response
                 # log.info(f"LINE Notify Response: {response.status_code}, {response.text}")
