@@ -1,17 +1,17 @@
 # encoding: utf-8
 
-from flask import Blueprint, request
+from flask import Blueprint
+import requests
 from flask.views import MethodView
 from datetime import datetime
-import ckan.logic as logic, logging, ckan.model as model, ckan.lib.base as base
+import ckan.logic as logic, logging, ckan.model as model, ckan.lib.base as base, ckan.lib.mailer as mailer
+import ckan.plugins.toolkit as toolkit
 import ckan.lib.authenticator as authenticator
 import ckan.lib.helpers as h
-import ckan.lib.navl.dictization_functions as dictization_functions
-from ckan.common import _, g, config
-import requests
-from ckan.views.user import _edit_form_to_db_schema, set_repoze_user, _extra_template_variables, edit_user_form
-from ckan.common import _, g, request, asbool, config
 from sqlalchemy import Table, select
+from ckan.common import _, g, request, asbool, config
+from ckan.views.user import _edit_form_to_db_schema, set_repoze_user, _extra_template_variables, edit_user_form
+import ckan.lib.navl.dictization_functions as dictization_functions
 
 
 log = logging.getLogger(__name__)
