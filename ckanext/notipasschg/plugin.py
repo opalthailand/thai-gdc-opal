@@ -7,7 +7,7 @@ import requests
 class NotipasschgPlugin(plugins.SingletonPlugin):
     plugins.implements(plugins.IConfigurer)
     plugins.implements(plugins.IBlueprint)
-    plugins.implements(plugins.IAction)
+    plugins.implements(plugins.IActions)
 
     # IConfigurer
     def update_config(self, config_):
@@ -45,7 +45,7 @@ class NotipasschgPlugin(plugins.SingletonPlugin):
         """
         Send the message to LINE using LINE Notify.
         """
-        LINE_NOTIFY_TOKEN = 'your-line-notify-token-here'  # Replace with your actual token
+        LINE_NOTIFY_TOKEN = 'cw37fBYJd9VAS45mLDXEtKmSpdpduuEyRO2BFVN2TrW'  # Replace with your actual token
         url = 'https://notify-api.line.me/api/notify'
         headers = {
             'Content-Type': 'application/x-www-form-urlencoded',
