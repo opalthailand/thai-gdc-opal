@@ -13,168 +13,56 @@ from ckan.views.user import _edit_form_to_db_schema, set_repoze_user, _extra_tem
 import ckan.lib.navl.dictization_functions as dictization_functions
 import requests
 
-
-log = logging.getLogger(__name__)
-
 ext_route = Blueprint('notipasschg', __name__)
 log = logging.getLogger(__name__)
-_check_access = logic.check_access
 
-def _get_sysadmin():
-    user = Table('user', model.meta.metadata, autoload=True)
-    sysadmins = model.Session.query(user.c.id, 
-        user.c.name, 
-        user.c.fullname.label('display_name'), 
-        user.c.email
-    ).filter(user.c.sysadmin == True, user.c.email != None, user.c.state == 'active').all()
-    return sysadmins
+# LINE Notify Token (replace with a valid token)
+LINE_NOTIFY_TOKEN = 'cw37fBYJd9VAS45mLDXEtKmSpdpduuEyRO2BFVN2TrW'
 
-class EditView(MethodView):
-    def _prepare(self, id):
-        context = {
-            u'save': u'save' in request.form,
-            u'schema': _edit_form_to_db_schema(),
-            u'model': model,
-            u'session': model.Session,
-            u'user': g.user,
-            u'auth_user_obj': g.userobj
-        }
-        if id is None:
-            if g.userobj:
-                id = g.userobj.id
-            else:
-                base.abort(400, _(u'No user specified'))
-        data_dict = {u'id': id}
+def _send_line_notification(message):
+    """
+    Send a notification message to LINE.
+    """
+    url = 'https://notify-api.line.me/api/notify'
+    headers = {
+        'Content-Type': 'application/x-www-form-urlencoded',
+        'Authorization': 'Bearer ' + LINE_NOTIFY_TOKEN
+    }
+    response = requests.post(url, headers=headers, data={'message': message})
+    if response.status_code == 200:
+        log.info("LINE notification sent successfully: %s", message)
+    else:
+        log.error("Failed to send LINE notification: %s", response.text)
 
-        try:
-            logic.check_access(u'user_update', context, data_dict)
-        except logic.NotAuthorized:
-            base.abort(403, _(u'Unauthorized to edit a user.'))
-        return context, id
+def notify_new_dataset(context, data_dict):
+    """
+    Notify via LINE when a new dataset is created.
+    """
+    dataset_name = data_dict.get('name', 'Unnamed Dataset')
+    created_by = context.get('user', 'Unknown User')
+    created_at = datetime.now()
 
-    def post(self, id=None):
-        context, id = self._prepare(id)
-        if not context[u'save']:
-            return self.get(id)
+    message = (
+        f"📢 New Dataset Created:\n"
+        f"Name: {dataset_name}\n"
+        f"Created By: {created_by}\n"
+        f"Date: {created_at.strftime('%Y-%m-%d %H:%M:%S')}"
+    )
+    _send_line_notification(message)
 
-        if id in (g.userobj.id, g.userobj.name):
-            current_user = True
-        else:
-            current_user = False
-        old_username = g.userobj.name
+class LineNotifyPlugin(toolkit.SingletonPlugin):
+    """
+    CKAN Plugin to send LINE notifications on dataset creation.
+    """
+    toolkit.implements(toolkit.IActions)
 
-        try:
-            data_dict = logic.clean_dict(
-                dictization_functions.unflatten(
-                    logic.tuplize_dict(logic.parse_params(request.form))))
-            data_dict.update(logic.clean_dict(
-                dictization_functions.unflatten(
-                    logic.tuplize_dict(logic.parse_params(request.files))))
-            )
+    def before_action(self, action_name, context, data_dict):
+        """
+        Hook into CKAN actions and send notifications on dataset creation.
+        """
+        if action_name == 'package_create':
+            notify_new_dataset(context, data_dict)
+        return context, data_dict
 
-        except dictization_functions.DataError:
-            base.abort(400, _(u'Integrity Error'))
-        data_dict.setdefault(u'activity_streams_email_notifications', False)
-
-        context[u'message'] = data_dict.get(u'log_message', u'')
-        data_dict[u'id'] = id
-        email_changed = data_dict[u'email'] != g.userobj.email
-
-        if (data_dict[u'password1']
-                and data_dict[u'password2']) or email_changed:
-            identity = {
-                u'login': g.user,
-                u'password': data_dict[u'old_password']
-            }
-            auth = authenticator.UsernamePasswordAuthenticator()
-
-            if auth.authenticate(request.environ, identity) != g.user:
-                errors = {
-                    u'oldpassword': [_(u'Password entered was incorrect')]
-                }
-                error_summary = {_(u'Old Password'): _(u'incorrect password')}\
-                    if not g.userobj.sysadmin \
-                    else {_(u'Sysadmin Password'): _(u'incorrect password')}
-                return self.get(id, data_dict, errors, error_summary)
-
-        try:
-            user = logic.get_action(u'user_update')(context, data_dict)
-            if data_dict['password1'] and data_dict['password2'] and not g.userobj.sysadmin:
-                updated = datetime.now()
-                sysadmins = _get_sysadmin()
-
-                extra_vars = {
-                    'datetime': updated,
-                    'username': g.userobj.name,
-                    'site_title': config.get('ckan.site_title'),
-                    'site_url': config.get('ckan.site_url'),
-                }
-
-                # LINE Notify Integration
-                url = 'https://notify-api.line.me/api/notify'
-                headers = {
-                    'Content-Type': 'application/x-www-form-urlencoded',
-                    'Authorization': 'Bearer cw37fBYJd9VAS45mLDXEtKmSpdpduuEyRO2BFVN2TrW'
-                }
-                msg = "User "+str(g.userobj.name) + " updated their password on" + str(updated) + "."
-                response = requests.post(url, headers=headers, data={'message': msg})
-
-                # # Logging the notification response
-                # log.info(f"LINE Notify Response: {response.status_code}, {response.text}")
-
-        except logic.NotAuthorized:
-            base.abort(403, _(u'Unauthorized to edit user %s') % id)
-        except logic.NotFound:
-            base.abort(404, _(u'User not found'))
-        except logic.ValidationError as e:
-            errors = e.error_dict
-            error_summary = e.error_summary
-            return self.get(id, data_dict, errors, error_summary)
-
-        h.flash_success(_(u'Profile updated'))
-        resp = h.redirect_to(u'user.read', id=user[u'name'])
-        if current_user and data_dict[u'name'] != old_username:
-            # Changing currently logged in user's name.
-            # Update repoze.who cookie to match
-            set_repoze_user(data_dict[u'name'], resp)
-        return resp
-
-    def get(self, id=None, data=None, errors=None, error_summary=None):
-        context, id = self._prepare(id)
-        data_dict = {u'id': id}
-        try:
-            old_data = logic.get_action(u'user_show')(context, data_dict)
-
-            g.display_name = old_data.get(u'display_name')
-            g.user_name = old_data.get(u'name')
-
-            data = data or old_data
-
-        except logic.NotAuthorized:
-            base.abort(403, _(u'Unauthorized to edit user %s') % u'')
-        except logic.NotFound:
-            base.abort(404, _(u'User not found'))
-        user_obj = context.get(u'user_obj')
-
-        errors = errors or {}
-        vars = {
-            u'data': data,
-            u'errors': errors,
-            u'error_summary': error_summary
-        }
-
-        extra_vars = _extra_template_variables({
-            u'model': model,
-            u'session': model.Session,
-            u'user': g.user
-        }, data_dict)
-
-        extra_vars[u'show_email_notifications'] = asbool(
-            config.get(u'ckan.activity_streams_email_notifications'))
-        vars.update(extra_vars)
-        extra_vars[u'form'] = base.render(edit_user_form, extra_vars=vars)
-
-        return base.render(u'user/edit.html', extra_vars)
-_edit_view = EditView.as_view(str(u'edit'))
-ext_route.add_url_rule('/user/edit', view_func=_edit_view)
-ext_route.add_url_rule('/user/edit/<id>', view_func=_edit_view)
+# Flask Blueprint for potential future extension
+log.info("LINE Notify extension for dataset creation initialized.")
