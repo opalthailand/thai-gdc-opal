@@ -6,6 +6,7 @@ from ckanext.dataplatform.controller import MyLogic
 
 class DataplatformPlugin(plugins.SingletonPlugin):
     plugins.implements(plugins.IConfigurer)
+    plugins.implements(plugins.IBlueprint)  
 
     # IConfigurer
 
