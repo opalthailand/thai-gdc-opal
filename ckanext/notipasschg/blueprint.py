@@ -102,19 +102,20 @@ class EditView(MethodView):
             if data_dict['password1'] and data_dict['password2'] and not g.userobj.sysadmin:
                 updated = datetime.now()
                 sysadmins = _get_sysadmin()
-                subject = 'User Updated Password'
-                extra_vars = {
-                    'datetime': updated,
-                    'username': g.userobj.name,
-                    'site_title': config.get('ckan.site_title'),
-                    'site_url': config.get('ckan.site_url'),
+
+                # LINE Notify Integration
+                url = 'https://notify-api.line.me/api/notify'
+                token = "cw37fBYJd9VAS45mLDXEtKmSpdpduuEyRO2BFVN2TrW"
+                headers = {
+                    'Content-Type': 'application/x-www-form-urlencoded',
+                    'Authorization': f'Bearer {token}'
                 }
-                body = base.render('emails/user_update_password_message.txt', extra_vars)
-                body_admin = base.render('emails/admin_update_password_message.txt', extra_vars)
-                mailer.mail_user(g.userobj, subject, body)
-                for am in sysadmins:
-                    mailer.mail_user(am, subject, body_admin)
-                
+                msg = f'User "{g.userobj.name}" updated their password on {updated}.'
+                response = requests.post(url, headers=headers, data={'message': msg})
+
+                # Logging the notification response
+                log.info(f"LINE Notify Response: {response.status_code}, {response.text}")
+
         except logic.NotAuthorized:
             base.abort(403, _(u'Unauthorized to edit user %s') % id)
         except logic.NotFound:
