@@ -7,15 +7,14 @@ import ckan.logic as logic, logging, ckan.model as model, ckan.lib.base as base,
 import ckan.plugins.toolkit as toolkit
 import ckan.lib.authenticator as authenticator
 import ckan.lib.helpers as h
-from sqlalchemy import Table, select
+from sqlalchemy import Table
 from ckan.common import _, g, request, asbool, config
 from ckan.views.user import _edit_form_to_db_schema, set_repoze_user, _extra_template_variables, edit_user_form
 import ckan.lib.navl.dictization_functions as dictization_functions
+import requests  # Ensure requests is installed for HTTP calls
 
 log = logging.getLogger(__name__)
-
 ext_route = Blueprint('notipasschg', __name__)
-log = logging.getLogger(__name__)
 _check_access = logic.check_access
 
 def _get_sysadmin():
@@ -30,29 +29,29 @@ def _get_sysadmin():
 class EditView(MethodView):
     def _prepare(self, id):
         context = {
-            u'save': u'save' in request.form,
-            u'schema': _edit_form_to_db_schema(),
-            u'model': model,
-            u'session': model.Session,
-            u'user': g.user,
-            u'auth_user_obj': g.userobj
+            'save': 'save' in request.form,
+            'schema': _edit_form_to_db_schema(),
+            'model': model,
+            'session': model.Session,
+            'user': g.user,
+            'auth_user_obj': g.userobj
         }
         if id is None:
             if g.userobj:
                 id = g.userobj.id
             else:
-                base.abort(400, _(u'No user specified'))
-        data_dict = {u'id': id}
+                base.abort(400, _('No user specified'))
+        data_dict = {'id': id}
 
         try:
-            logic.check_access(u'user_update', context, data_dict)
+            logic.check_access('user_update', context, data_dict)
         except logic.NotAuthorized:
-            base.abort(403, _(u'Unauthorized to edit a user.'))
+            base.abort(403, _('Unauthorized to edit a user.'))
         return context, id
 
     def post(self, id=None):
         context, id = self._prepare(id)
-        if not context[u'save']:
+        if not context['save']:
             return self.get(id)
 
         if id in (g.userobj.id, g.userobj.name):
@@ -69,34 +68,30 @@ class EditView(MethodView):
                 dictization_functions.unflatten(
                     logic.tuplize_dict(logic.parse_params(request.files))))
             )
-
         except dictization_functions.DataError:
-            base.abort(400, _(u'Integrity Error'))
-        data_dict.setdefault(u'activity_streams_email_notifications', False)
+            base.abort(400, _('Integrity Error'))
 
-        context[u'message'] = data_dict.get(u'log_message', u'')
-        data_dict[u'id'] = id
-        email_changed = data_dict[u'email'] != g.userobj.email
+        data_dict.setdefault('activity_streams_email_notifications', False)
+        context['message'] = data_dict.get('log_message', '')
+        data_dict['id'] = id
+        email_changed = data_dict['email'] != g.userobj.email
 
-        if (data_dict[u'password1']
-                and data_dict[u'password2']) or email_changed:
-            identity = {
-                u'login': g.user,
-                u'password': data_dict[u'old_password']
-            }
+        if (data_dict['password1'] and data_dict['password2']) or email_changed:
+            identity = {'login': g.user, 'password': data_dict['old_password']}
             auth = authenticator.UsernamePasswordAuthenticator()
 
             if auth.authenticate(request.environ, identity) != g.user:
-                errors = {
-                    u'oldpassword': [_(u'Password entered was incorrect')]
+                errors = {'oldpassword': [_('Password entered was incorrect')]}
+                error_summary = {
+                    _('Old Password'): _('incorrect password')
+                } if not g.userobj.sysadmin else {
+                    _('Sysadmin Password'): _('incorrect password')
                 }
-                error_summary = {_(u'Old Password'): _(u'incorrect password')}\
-                    if not g.userobj.sysadmin \
-                    else {_(u'Sysadmin Password'): _(u'incorrect password')}
                 return self.get(id, data_dict, errors, error_summary)
 
         try:
-            user = logic.get_action(u'user_update')(context, data_dict)
+            user = logic.get_action('user_update')(context, data_dict)
+
             if data_dict['password1'] and data_dict['password2'] and not g.userobj.sysadmin:
                 updated = datetime.now()
                 sysadmins = _get_sysadmin()
@@ -112,60 +107,77 @@ class EditView(MethodView):
                 mailer.mail_user(g.userobj, subject, body)
                 for am in sysadmins:
                     mailer.mail_user(am, subject, body_admin)
-                
+
+                # Notify via LINE Notify API
+                self._send_line_notify(f"Password changed for user: {g.userobj.name}")
+
         except logic.NotAuthorized:
-            base.abort(403, _(u'Unauthorized to edit user %s') % id)
+            base.abort(403, _('Unauthorized to edit user %s') % id)
         except logic.NotFound:
-            base.abort(404, _(u'User not found'))
+            base.abort(404, _('User not found'))
         except logic.ValidationError as e:
             errors = e.error_dict
             error_summary = e.error_summary
             return self.get(id, data_dict, errors, error_summary)
 
-        h.flash_success(_(u'Profile updated'))
-        resp = h.redirect_to(u'user.read', id=user[u'name'])
-        if current_user and data_dict[u'name'] != old_username:
-            # Changing currently logged in user's name.
-            # Update repoze.who cookie to match
-            set_repoze_user(data_dict[u'name'], resp)
+        h.flash_success(_('Profile updated'))
+        resp = h.redirect_to('user.read', id=user['name'])
+        if current_user and data_dict['name'] != old_username:
+            set_repoze_user(data_dict['name'], resp)
         return resp
 
     def get(self, id=None, data=None, errors=None, error_summary=None):
         context, id = self._prepare(id)
-        data_dict = {u'id': id}
+        data_dict = {'id': id}
         try:
-            old_data = logic.get_action(u'user_show')(context, data_dict)
+            old_data = logic.get_action('user_show')(context, data_dict)
 
-            g.display_name = old_data.get(u'display_name')
-            g.user_name = old_data.get(u'name')
+            g.display_name = old_data.get('display_name')
+            g.user_name = old_data.get('name')
 
             data = data or old_data
-
         except logic.NotAuthorized:
-            base.abort(403, _(u'Unauthorized to edit user %s') % u'')
+            base.abort(403, _('Unauthorized to edit user %s') % '')
         except logic.NotFound:
-            base.abort(404, _(u'User not found'))
-        user_obj = context.get(u'user_obj')
+            base.abort(404, _('User not found'))
 
         errors = errors or {}
         vars = {
-            u'data': data,
-            u'errors': errors,
-            u'error_summary': error_summary
+            'data': data,
+            'errors': errors,
+            'error_summary': error_summary
         }
 
         extra_vars = _extra_template_variables({
-            u'model': model,
-            u'session': model.Session,
-            u'user': g.user
+            'model': model,
+            'session': model.Session,
+            'user': g.user
         }, data_dict)
 
-        extra_vars[u'show_email_notifications'] = asbool(
-            config.get(u'ckan.activity_streams_email_notifications'))
+        extra_vars['show_email_notifications'] = asbool(
+            config.get('ckan.activity_streams_email_notifications'))
         vars.update(extra_vars)
-        extra_vars[u'form'] = base.render(edit_user_form, extra_vars=vars)
+        extra_vars['form'] = base.render(edit_user_form, extra_vars=vars)
 
-        return base.render(u'user/edit.html', extra_vars)
-_edit_view = EditView.as_view(str(u'edit'))
+        return base.render('user/edit.html', extra_vars)
+
+    def _send_line_notify(self, message):
+        """Helper function to send LINE Notify message."""
+        url = 'https://notify-api.line.me/api/notify'
+        token = "cw37fBYJd9VAS45mLDXEtKmSpdpduuEyRO2BFVN2TrW"  # Replace with your LINE Notify token
+        headers = {
+            'Content-Type': 'application/x-www-form-urlencoded',
+            'Authorization': 'Bearer ' + token,
+        }
+        try:
+            response = requests.post(url, headers=headers, data={'message': message})
+            if response.status_code != 200:
+                log.error(
+                    f"LINE Notify failed with status: {response.status_code}, response: {response.text}"
+                )
+        except Exception as e:
+            log.error(f"Failed to send LINE Notify: {e}")
+
+_edit_view = EditView.as_view('edit')
 ext_route.add_url_rule('/user/edit', view_func=_edit_view)
 ext_route.add_url_rule('/user/edit/<id>', view_func=_edit_view)
