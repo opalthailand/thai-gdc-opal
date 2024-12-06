@@ -1,0 +1,50 @@
+<header class="module-content page-header">
+<section class="module-content">
+  <h2>{{ _('ชุดข้อมูลที่มีคนเข้าชมมากที่สุด') }}</h2>
+  <a style="float:right;   margin-bottom: 10px;" class="btn" href="#"
+    onClick="$('#top_package_views').tableExport({type:'csv',escape:'false', tableName:'top_package_views'});">Export as CSV</a>
+  <div id="kw-result" class="module-content tab-content active">
+    <table class="table table-chunky table-bordered table-striped" id="top_package_views">
+        <thead>
+            <tr>
+                <th>{{ _('ชื่อชุดข้อมูล') }}</th>
+                <th>{{ _('จำนวน views') }}</th>
+                <th>{{ _('จำนวน downloads') }}</th>
+                <th>{{ _('จำนวน recent views (14 วันล่าสุด)') }}</th>
+                <th>{{ _('จำนวน recent downloads (14 วันล่าสุด)') }}</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for data in data_receive %}
+            <tr>
+                <td><a href="{{ h.url_for('dataset.read', id=data.package_name)}}" target="_blank">{{ data.package_title }}</a></td>
+                <td>{{ '{0:,}'.format(data.views | int) }}</td>
+                <td>{{ '{0:,}'.format(data.downloads | int) }}</td>
+                <td>{{ '{0:,}'.format(data.recent_views | int) }}</td>
+                <td>{{ '{0:,}'.format(data.recent_downloads | int) }}</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+  </div>
+  <div id="kw-noresult" class="module-content tab-content">
+    <table class="table table-chunky table-bordered table-striped" id="ke-search-noresult">
+        <thead>
+            <tr>
+                <th>{{ _('ลำดับ') }}</th>
+                <th>{{ _('คำค้น') }}</th>
+                <th>{{ _('จำนวนการค้นหา') }}</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for data in data_receive[1] %}
+            <tr>
+                <th>{{ loop.index }}</th>
+                <td>{{ data.term }}</td>
+                <td>{{ data.count }}</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+  </div>
+</section>

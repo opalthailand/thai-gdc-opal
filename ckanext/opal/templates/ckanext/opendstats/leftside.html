@@ -1,0 +1,92 @@
+<section class="module module-narrow">
+    <h2 class="module-heading"><i class="fa fa-bar-chart-o"></i> {{ _('Statistics Menu') }}</h2>
+    <nav data-module="opendstats-nav">
+        <ul class="unstyled nav nav-simple">
+            {% if h.check_access('sysadmin') %}
+            <li class="nav-item{{ ' active' if on_page == 'usage_summary_by_org' else ''}}">
+                <a href="{{ h.url_for('opendstats.index', stats_page='usage_summary_by_org') }}">
+                    {{ _('Usage summary by organization') }}
+                </a>
+            </li>
+            {% endif %}
+            <li class="nav-item{{ ' active' if on_page == 'top_package_views' else ''}}">
+                <a href="{{ h.url_for('opendstats.index', stats_page='top_package_views') }}">
+                    {{ _('ชุดข้อมูลที่มีคนเข้าชมมากที่สุด') }}
+                </a>
+            </li>
+            {% if (h.ops_check_table_column('discovery_searchterm','result') or h.ops_check_table_column('discovery_searchterm')) and h.check_access('sysadmin') %}
+            <li class="nav-item{{ ' active' if on_page == 'stats_keywordsearch' else ''}}">
+                <a href="{{ h.url_for('opendstats.index', stats_page='stats_keywordsearch') }}">
+                    {{ _('คำค้นที่มีการใช้มากที่สุด') }}
+                </a>
+            </li>
+            {% endif %}
+            <li class="nav-item{{ ' active' if on_page == 'recent_created_datasets' else ''}}">
+                <a href="{{ h.url_for('opendstats.index', stats_page='recent_created_datasets') }}">
+                    {{ _('Recently Created Datasets') }}
+                </a>
+            </li>
+            <li class="nav-item{{ ' active' if on_page == 'recent_updated_datasets' else ''}}">
+                <a href="{{ h.url_for('opendstats.index', stats_page='recent_updated_datasets') }}">
+                    {{ _('Recently Updated Datasets') }}
+                </a>
+            </li>
+            <li class="nav-item{{ ' active' if on_page == 'most_edited_packages' else ''}}">
+                <a href="{{ h.url_for('opendstats.index', stats_page='most_edited_packages') }}">
+                    {{ _('Most Edited Datasets') }}
+                </a>
+            </li>
+            <li class="nav-item{{ ' active' if on_page == 'top_package_owners' else ''}}">
+                <a href="{{ h.url_for('opendstats.index', stats_page='top_package_owners') }}">
+                    {{ _('Users Creating Most Datasets') }}
+                </a>
+                <!-- <li class="nav-item"><a href="{{ h.url_for('opendstats.second') }}">{{ _('test custom 2 ') }}</a> -->
+            </li>
+            {% if h.check_access('sysadmin') %}
+                <li class="nav-item{{ ' active' if on_page == 'user_access_list' else ''}}">
+                    <a href="{{ h.url_for('opendstats.index', stats_page='user_access_list') }}">
+                        {{ _('User Access List') }}
+                    </a>
+                </li>
+                <li class="nav-item{{ ' active' if on_page == 'users_by_org' else ''}}">
+                    <a href="{{ h.url_for('opendstats.index', stats_page='users_by_org') }}">
+                        {{ _('Users by Organization') }}
+                    </a>
+                </li>
+            {% endif %}
+            <li class="nav-item{{ ' active' if on_page == 'by_org' else ''}}">
+                <a href="{{ h.url_for('opendstats.index', stats_page='by_org') }}">
+                    {{ _('Datasets by Organization') }}
+                </a>
+            </li>
+            <li class="nav-item{{ ' active' if on_page == 'res_by_org' else ''}}">
+                <a href="{{ h.url_for('opendstats.index', stats_page='res_by_org') }}">
+                    {{ _('Resources by Organization') }}
+                </a>
+            </li>
+            <li class="nav-item{{ ' active' if on_page == 'largest_groups' else ''}}">
+                <a href="{{ h.url_for('opendstats.index', stats_page='largest_groups') }}">
+                    {{ _('Largest Groups') }}
+                </a>
+            </li>
+            <li class="nav-item{{ ' active' if on_page == 'top_tags' else ''}}">
+                <a href="{{ h.url_for('opendstats.index', stats_page='top_tags') }}">
+                    {{ _('Top Tags') }}
+                </a>
+            </li>
+            {% if c.external_stats and h.check_access('sysadmin') %}
+            <li class="nav-item{{ ' active' if on_page == 'external_stats' else ''}}">
+                <a href="{{ h.url_for('opendstats.index', stats_page='external_stats') }}">
+                    {{ _('สถิติจากภายนอก') }}
+                </a>
+            </li>
+            {% endif %}
+            <li class="nav-item{{ ' active' if on_page == 'summary' else ''}}">
+                <a href="{{ h.url_for('opendstats.index') }}">
+                    {{ _('Summary Statistic') }}
+                </a>
+            </li>
+
+        </ul>
+    </nav>
+</section>

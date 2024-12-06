@@ -1,0 +1,37 @@
+<header class="module-content page-header">
+    <ul class="nav nav-tabs">
+        <li class="active"><a href="#toptag-data-table" data-toggle="tab"><i class="fa fa-table"></i>{{ _("Table") }}</a>
+        </li>
+        <li><a href="#toptag-charts" data-toggle="tab"><i class="fa fa-bar-chart"></i>{{ _("Word Cloud") }}</a>
+        </li>
+    </ul>
+</header>
+<section class="module-content">
+    <h2>{{ _('Top Tags') }}</h2>
+    <div id="toptag-charts" style="width: 800px;height:400px;" class="module-content tab-content"
+        data-module="opendstats-toptag-charts"></div>
+    <div id="toptag-data-table" class="module-content tab-content active">
+        <table class="table table-chunky table-bordered table-striped">
+            <thead>
+                <tr>
+                    <th>{{ _('Tag Name') }}</th>
+                    <th class="metric">{{ _('Number of Datasets') }}</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% set items = [] %}
+                {% for tag, num_packages in data_receive %}
+                {% if items.append({'name': tag.name, 'value': num_packages|int}) %}
+                {% endif %}
+                <tr>
+                    <td>{{ h.link_to(tag.name, h.url_for('dataset.search', tags=tag.name)) }}</td>
+                    <td class="metric">{{ num_packages }}</td>
+                </tr>
+                {% endfor %}
+                <script>
+                    var data_tag = {{ items| tojson | safe }}
+                </script>
+            </tbody>
+        </table>
+    </div>
+</section>

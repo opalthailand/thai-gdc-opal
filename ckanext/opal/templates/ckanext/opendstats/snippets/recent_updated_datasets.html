@@ -1,0 +1,39 @@
+<section class="module-content">
+    <h2>{{ _('Recently Updated Datasets') }}</h2>
+    {% if data_receive %}
+    <a style="float:right;   margin-bottom: 10px;" class="btn" href="#"
+        onClick="$('#recent-updated-datasets').tableExport({type:'csv', tableName:'recently-updated-datasets', escape:'false'});">Export
+        as CSV</a>
+    <!--<a style="float:right;   margin-bottom: 10px;   margin-right: 10px;" class="btn btn-excel" href="#"
+       onClick ="$('#recent-updated-datasets').tableExport({type:'excel', tableName:'recently-updated-datasets', escape:'false', htmlContent:'true'});">Export as XLSX</a>-->
+    <table class="table table-chunky table-bordered table-striped" id="recent-updated-datasets">
+        <thead>
+            <tr>
+                <th>{{ _('Date') }}</th>
+                <th>{{ _('Dataset') }}</th>
+                {% if h.check_access('sysadmin') %}
+                <th>{{ _('User') }}</th>
+                {% endif %}
+                <th>{{ _('Organization') }}</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for date,package,group,user in data_receive|reverse() %}
+            <tr>
+                <td>{{ date.strftime(date_format) }}</td>
+                <td>{{ h.link_to(package.title or package.name, h.url_for('%s.read' % package.type, id=package.name)) }}
+                </td>
+                {% if h.check_access('sysadmin') %}
+                <td>{{ h.link_to(user.display_name or user.name, h.url_for('user.read',
+                    id=user.name)) }} <br />{{user.email}}</td>
+                {% endif %}
+                <td>{{h.link_to(group.title or group.name, h.url_for('organization.read',
+                    id=group.name)) }}</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+    {% else %}
+    <p class="empty">{{ _('No changes in the last %s days' | format(c.recent_period)) }}</p>
+    {% endif %}
+</section>

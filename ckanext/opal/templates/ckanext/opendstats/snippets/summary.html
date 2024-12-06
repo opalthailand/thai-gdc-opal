@@ -1,0 +1,25 @@
+<section class="module-content">
+    <h2>{{ _('Summary Statistic') }}</h2>
+    {% if data_receive %}
+    <table class="table table-chunky table-bordered table-striped">
+        <thead>
+            <tr>
+                <th>{{ _('Site Statistics') }}</th>
+                <th class="metric">{{ _('Value') }}</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for measure,value in data_receive %}
+            {% if 'Archived' not in measure or h.check_access('sysadmin') %}
+            <tr>
+                <td>{{_(measure)}}</td>
+                <td class="metric">{{ value }}</td>
+            </tr>
+            {% endif %}
+            {% endfor %}
+        </tbody>
+    </table>
+    {% else %}
+    <p class="empty">{{ _('No groups') }}</p>
+    {% endif %}
+</section>

@@ -1,0 +1,43 @@
+<section class="module-content">
+    <h2>{{ _('Usage summary by organization') }}</h2>
+    {% if data_receive %}
+    <a style="float:right;   margin-bottom: 10px;" class="btn" target="_blank" href="{{ h.url_for('opendstats.export', stats_page='usage_by_org') }}">{{_('Export as CSV')}}</a>
+    <table class="table table-chunky table-bordered table-striped" id="used-dataset-by-org">
+        <thead>
+            <tr>
+                <th>{{ _('หน่วยงาน') }}</th>
+                <th>{{ _('หน่วยงานต้นสังกัด') }}</th>
+                <th>{{ _('เดือน') }}</th>
+                <th>{{ _('ปี') }}</th>
+                <th>{{ _('จำนวนเข้าชม') }}</th>
+                <th>{{ _('จำนวนการดวน์โหลด') }}</th>
+                <th>{{ _('จำนวนชุดข้อมูลที่สร้าง') }}</th>
+                <th>{{ _('จำนวนครั้งที่มีการปรับปรุงชุดข้อมูล') }}</th>
+                <th>{{ _('จำนวนทรัพยากรที่สร้าง') }}</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for data in data_receive.data %}
+            {% set tracking_date = h.date_str_to_datetime(data.tracking_month + '-01') %}
+            <tr>
+                <td><a href="{{h.url_for('organization.read', id=data.org_name) if data.org_name else '#'}}" target="_blank">{{ data.org_title | replace("None", "-") }}</a></td>
+                <td>{{ data.parent_org_title | replace("None", "-") }}</td>
+                <td>{{ tracking_date.strftime('%b') }}</td>
+                <td>{{ tracking_date.strftime('%Y') }}</td>
+                <td>{{ '{0:,}'.format(data.views | int ) | replace("None", "-") }}</td>
+                <td>{{ '{0:,}'.format(data.downloads | int) | replace("None", "-") }}</td>
+                <td>{{ '{0:,}'.format(data.create_packages | int) | replace("None", "-") }}</td>
+                <td>{{ '{0:,}'.format(data.updated_packages | int) | replace("None", "-") }}</td>
+                <td>{{ '{0:,}'.format(data.create_resources | int) | replace("None", "-") }}</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+    {% else %}
+    <p class="empty">{{ _('ไม่มีข้อมูล') }}</p>
+    {% endif %}
+</section>
+
+    {% block page_pagination %}
+    {{page.pager(q=q, stats_page='usage_summary_by_org')}}
+    {% endblock %}

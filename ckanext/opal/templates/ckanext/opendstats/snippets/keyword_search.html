@@ -1,0 +1,86 @@
+{% if h.ops_check_table_column('discovery_searchterm','result') %}  
+  <header class="module-content page-header">
+    <ul class="nav nav-tabs">
+        <li class="active"><a href="#kw-result" data-toggle="tab"><i class=""></i>{{ _("คำค้นที่พบชุดข้อมูล") }}</a>
+        </li>
+        <li><a href="#kw-noresult" data-toggle="tab"><i class=""></i>{{ _("คำค้นที่ไม่พบชุดข้อมูล") }}</a>
+        </li>
+    </ul>
+  </header>
+  <section class="module-content">
+    <h2>{{ _('คำค้นที่มีการใช้มากที่สุด') }}</h2>
+    <div id="kw-result" class="module-content tab-content active">
+      <a style="float:right;   margin-bottom: 10px;" class="btn" target="_blank" href="{{ h.url_for('opendstats.export', stats_page='stats_keywordsearch') }}">{{_('Export as CSV')}}</a>
+      <table class="table table-chunky table-bordered table-striped" id="ke-search-result">
+          <thead>
+              <tr>
+                  <th>{{ _('ลำดับ') }}</th>
+                  <th>{{ _('คำค้น') }}</th>
+                  <th>{{ _('จำนวนการค้นหา') }}</th>
+                  <th>{{ _('จำนวนชุดข้อมูลที่พบ') }}</th>
+              </tr>
+          </thead>
+          <tbody>
+              {% for data in data_receive[0] %}
+              <tr>
+                  <td>{{ loop.index }}</td>
+                  <td>{{ data.term }}</td>
+                  <td>{{ data.count }}</td>
+                  <td>{{ data.result }}</td>
+              </tr>
+              {% endfor %}
+          </tbody>
+      </table>
+    </div>
+    <div id="kw-noresult" class="module-content tab-content">
+      <a style="float:right;   margin-bottom: 10px;" class="btn" href="#" onClick="$('#kw-search-noresult').tableExport({type:'csv',escape:'false', tableName:'kw-search-noresult'});">Export as CSV</a>
+      <table class="table table-chunky table-bordered table-striped" id="kw-search-noresult">
+          <thead>
+              <tr>
+                  <th>{{ _('ลำดับ') }}</th>
+                  <th>{{ _('คำค้น') }}</th>
+                  <th>{{ _('จำนวนการค้นหา') }}</th>
+              </tr>
+          </thead>
+          <tbody>
+              {% for data in data_receive[1] %}
+              <tr>
+                  <td>{{ loop.index }}</td>
+                  <td>{{ data.term }}</td>
+                  <td>{{ data.count }}</td>
+              </tr>
+              {% endfor %}
+          </tbody>
+      </table>
+    </div>
+  </section>
+{% elif h.ops_check_table_column('discovery_searchterm')%}
+  <section class="module-content">
+    <h2>{{ _('คำค้นที่มีการใช้มากที่สุด') }}</h2>
+    <div id="kw-noresult" class="module-content">
+      <a style="float:right;   margin-bottom: 10px;" class="btn" href="#" onClick="$('#kw-search-noresult').tableExport({type:'csv',escape:'false', tableName:'kw-search-noresult'});">Export as CSV</a>
+      <table class="table table-chunky table-bordered table-striped" id="kw-search-noresult">
+          <thead>
+              <tr>
+                  <th>{{ _('ลำดับ') }}</th>
+                  <th>{{ _('คำค้น') }}</th>
+                  <th>{{ _('จำนวนการค้นหา') }}</th>
+              </tr>
+          </thead>
+          <tbody>
+              {% for data in data_receive[0] %}
+              <tr>
+                  <td>{{ loop.index }}</td>
+                  <td>{{ data.term }}</td>
+                  <td>{{ data.count }}</td>
+              </tr>
+              {% endfor %}
+          </tbody>
+      </table>
+    </div>
+  </section>
+{% else %}
+  <section class="module-content">
+    <p class="empty">{{ _('ไม่มีสิทธิ์เข้าดูข้อมูล') }}</p>
+  </section>
+{% endif %}
