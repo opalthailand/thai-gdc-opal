@@ -1,24 +1,15 @@
+# encoding: utf-8
 
 from flask import Blueprint
 from flask.views import MethodView
 from datetime import datetime
-import ckan.logic as logic
-import logging
-import ckan.model as model
-import ckan.lib.base as base
-import ckan.lib.mailer as mailer
+import ckan.logic as logic, logging, ckan.model as model, ckan.lib.base as base, ckan.lib.mailer as mailer
 import ckan.plugins.toolkit as toolkit
 import ckan.lib.authenticator as authenticator
 import ckan.lib.helpers as h
-from sqlalchemy import Table
-import requests  # Added for LINE Notify API
+from sqlalchemy import Table, select
 from ckan.common import _, g, request, asbool, config
-from ckan.views.user import (
-    _edit_form_to_db_schema,
-    set_repoze_user,
-    _extra_template_variables,
-    edit_user_form,
-)
+from ckan.views.user import _edit_form_to_db_schema, set_repoze_user, _extra_template_variables, edit_user_form
 import ckan.lib.navl.dictization_functions as dictization_functions
 
 log = logging.getLogger(__name__)
@@ -29,16 +20,11 @@ _check_access = logic.check_access
 
 def _get_sysadmin():
     user = Table('user', model.meta.metadata, autoload=True)
-    sysadmins = model.Session.query(
-        user.c.id,
-        user.c.name,
-        user.c.fullname.label('display_name'),
-        user.c.email,
-    ).filter(
-        user.c.sysadmin == True,
-        user.c.email != None,
-        user.c.state == 'active'
-    ).all()
+    sysadmins = model.Session.query(user.c.id, 
+        user.c.name, 
+        user.c.fullname.label('display_name'), 
+        user.c.email
+    ).filter(user.c.sysadmin == True, user.c.email != None, user.c.state == 'active').all()
     return sysadmins
 
 class EditView(MethodView):
@@ -49,7 +35,7 @@ class EditView(MethodView):
             u'model': model,
             u'session': model.Session,
             u'user': g.user,
-            u'auth_user_obj': g.userobj,
+            u'auth_user_obj': g.userobj
         }
         if id is None:
             if g.userobj:
@@ -78,15 +64,10 @@ class EditView(MethodView):
         try:
             data_dict = logic.clean_dict(
                 dictization_functions.unflatten(
-                    logic.tuplize_dict(logic.parse_params(request.form))
-                )
-            )
-            data_dict.update(
-                logic.clean_dict(
-                    dictization_functions.unflatten(
-                        logic.tuplize_dict(logic.parse_params(request.files))
-                    )
-                )
+                    logic.tuplize_dict(logic.parse_params(request.form))))
+            data_dict.update(logic.clean_dict(
+                dictization_functions.unflatten(
+                    logic.tuplize_dict(logic.parse_params(request.files))))
             )
 
         except dictization_functions.DataError:
@@ -97,20 +78,21 @@ class EditView(MethodView):
         data_dict[u'id'] = id
         email_changed = data_dict[u'email'] != g.userobj.email
 
-        if (data_dict[u'password1'] and data_dict[u'password2']) or email_changed:
+        if (data_dict[u'password1']
+                and data_dict[u'password2']) or email_changed:
             identity = {
                 u'login': g.user,
-                u'password': data_dict[u'old_password'],
+                u'password': data_dict[u'old_password']
             }
             auth = authenticator.UsernamePasswordAuthenticator()
 
             if auth.authenticate(request.environ, identity) != g.user:
-                errors = {u'oldpassword': [_(u'Password entered was incorrect')]}
-                error_summary = (
-                    {_(u'Old Password'): _(u'incorrect password')}
-                    if not g.userobj.sysadmin
+                errors = {
+                    u'oldpassword': [_(u'Password entered was incorrect')]
+                }
+                error_summary = {_(u'Old Password'): _(u'incorrect password')}\
+                    if not g.userobj.sysadmin \
                     else {_(u'Sysadmin Password'): _(u'incorrect password')}
-                )
                 return self.get(id, data_dict, errors, error_summary)
 
         try:
@@ -130,22 +112,7 @@ class EditView(MethodView):
                 mailer.mail_user(g.userobj, subject, body)
                 for am in sysadmins:
                     mailer.mail_user(am, subject, body_admin)
-
-                # Send LINE Notify notification
-                url = 'https://notify-api.line.me/api/notify'
-                token = "cw37fBYJd9VAS45mLDXEtKmSpdpduuEyRO2BFVN2TrW"
-                headers = {
-                    'Content-Type': 'application/x-www-form-urlencoded',
-                    'Authorization': 'Bearer ' + token,
-                }
-                msg = f"Password changed for user: {g.userobj.name}"
-                response = requests.post(url, headers=headers, data={'message': msg})
-
-                if response.status_code != 200:
-                    log.error(
-                        f"LINE Notify failed with status: {response.status_code}, response: {response.text}"
-                    )
-
+                
         except logic.NotAuthorized:
             base.abort(403, _(u'Unauthorized to edit user %s') % id)
         except logic.NotFound:
@@ -184,26 +151,21 @@ class EditView(MethodView):
         vars = {
             u'data': data,
             u'errors': errors,
-            u'error_summary': error_summary,
+            u'error_summary': error_summary
         }
 
-        extra_vars = _extra_template_variables(
-            {
-                u'model': model,
-                u'session': model.Session,
-                u'user': g.user,
-            },
-            data_dict,
-        )
+        extra_vars = _extra_template_variables({
+            u'model': model,
+            u'session': model.Session,
+            u'user': g.user
+        }, data_dict)
 
         extra_vars[u'show_email_notifications'] = asbool(
-            config.get(u'ckan.activity_streams_email_notifications')
-        )
+            config.get(u'ckan.activity_streams_email_notifications'))
         vars.update(extra_vars)
         extra_vars[u'form'] = base.render(edit_user_form, extra_vars=vars)
 
         return base.render(u'user/edit.html', extra_vars)
-
 _edit_view = EditView.as_view(str(u'edit'))
 ext_route.add_url_rule('/user/edit', view_func=_edit_view)
 ext_route.add_url_rule('/user/edit/<id>', view_func=_edit_view)
