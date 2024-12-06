@@ -1,7 +1,6 @@
 # encoding: utf-8
 
 from flask import Blueprint
-import requests
 from flask.views import MethodView
 from datetime import datetime
 import ckan.logic as logic, logging, ckan.model as model, ckan.lib.base as base, ckan.lib.mailer as mailer
@@ -13,7 +12,6 @@ from ckan.common import _, g, request, asbool, config
 from ckan.views.user import _edit_form_to_db_schema, set_repoze_user, _extra_template_variables, edit_user_form
 import ckan.lib.navl.dictization_functions as dictization_functions
 
-
 log = logging.getLogger(__name__)
 
 ext_route = Blueprint('notipasschg', __name__)
@@ -22,16 +20,11 @@ _check_access = logic.check_access
 
 def _get_sysadmin():
     user = Table('user', model.meta.metadata, autoload=True)
-    sysadmins = model.Session.query(
-        user.c.id,
-        user.c.name,
-        user.c.fullname.label('display_name'),
+    sysadmins = model.Session.query(user.c.id, 
+        user.c.name, 
+        user.c.fullname.label('display_name'), 
         user.c.email
-    ).filter(
-        user.c.sysadmin == True,
-        user.c.email != None,
-        user.c.state == 'active'
-    ).all()
+    ).filter(user.c.sysadmin == True, user.c.email != None, user.c.state == 'active').all()
     return sysadmins
 
 class EditView(MethodView):
@@ -76,9 +69,9 @@ class EditView(MethodView):
                 dictization_functions.unflatten(
                     logic.tuplize_dict(logic.parse_params(request.files))))
             )
+
         except dictization_functions.DataError:
             base.abort(400, _(u'Integrity Error'))
-
         data_dict.setdefault(u'activity_streams_email_notifications', False)
 
         context[u'message'] = data_dict.get(u'log_message', u'')
@@ -107,20 +100,19 @@ class EditView(MethodView):
             if data_dict['password1'] and data_dict['password2'] and not g.userobj.sysadmin:
                 updated = datetime.now()
                 sysadmins = _get_sysadmin()
-
-                # LINE Notify Integration
-                url = 'https://notify-api.line.me/api/notify'
-                token = "cw37fBYJd9VAS45mLDXEtKmSpdpduuEyRO2BFVN2TrW"
-                headers = {
-                    'Content-Type': 'application/x-www-form-urlencoded',
-                    'Authorization': f'Bearer {token}'
+                subject = 'User Updated Password'
+                extra_vars = {
+                    'datetime': updated,
+                    'username': g.userobj.name,
+                    'site_title': config.get('ckan.site_title'),
+                    'site_url': config.get('ckan.site_url'),
                 }
-                msg = f'User "{g.userobj.name}" updated their password on {updated}.'
-                response = requests.post(url, headers=headers, data={'message': msg})
-
-                # Logging the notification response
-                log.info(f"LINE Notify Response: {response.status_code}, {response.text}")
-
+                body = base.render('emails/user_update_password_message.txt', extra_vars)
+                body_admin = base.render('emails/admin_update_password_message.txt', extra_vars)
+                mailer.mail_user(g.userobj, subject, body)
+                for am in sysadmins:
+                    mailer.mail_user(am, subject, body_admin)
+                
         except logic.NotAuthorized:
             base.abort(403, _(u'Unauthorized to edit user %s') % id)
         except logic.NotFound:
@@ -153,6 +145,7 @@ class EditView(MethodView):
             base.abort(403, _(u'Unauthorized to edit user %s') % u'')
         except logic.NotFound:
             base.abort(404, _(u'User not found'))
+        user_obj = context.get(u'user_obj')
 
         errors = errors or {}
         vars = {
@@ -173,7 +166,6 @@ class EditView(MethodView):
         extra_vars[u'form'] = base.render(edit_user_form, extra_vars=vars)
 
         return base.render(u'user/edit.html', extra_vars)
-
 _edit_view = EditView.as_view(str(u'edit'))
 ext_route.add_url_rule('/user/edit', view_func=_edit_view)
 ext_route.add_url_rule('/user/edit/<id>', view_func=_edit_view)
