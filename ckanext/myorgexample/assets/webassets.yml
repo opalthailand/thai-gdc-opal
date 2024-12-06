@@ -1,0 +1,14 @@
+# myorgexample-js:
+#   filter: rjsmin
+#   output: ckanext-myorgexample/%(version)s-myorgexample.js
+#   contents:
+#     - js/myorgexample.js
+#   extra:
+#     preload:
+#       - base/main
+
+myorgexample-css:
+  filter: cssrewrite
+  output: ckanext-myorgexample/%(version)s-myorgexample.css
+  contents:
+    - css/myorgexample.css

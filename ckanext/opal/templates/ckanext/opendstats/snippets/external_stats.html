@@ -1,7 +1,0 @@
-{% if c.external_stats and h.check_access('sysadmin') %}
-<section class="module-content">
-  <h2>{{ _('สถิติจากภายนอก') }}</h2>
-  <div id="external-stats" class="embed-responsive embed-responsive-4by3"
-        data-module="opendstats-external-stats" data-module-url="{{ data_receive }}"></div>
-</section>
-{% endif %}
