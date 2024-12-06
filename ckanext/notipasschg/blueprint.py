@@ -103,6 +103,13 @@ class EditView(MethodView):
                 updated = datetime.now()
                 sysadmins = _get_sysadmin()
 
+                extra_vars = {
+                    'datetime': updated,
+                    'username': g.userobj.name,
+                    'site_title': config.get('ckan.site_title'),
+                    'site_url': config.get('ckan.site_url'),
+                }
+
                 # LINE Notify Integration
                 url = 'https://notify-api.line.me/api/notify'
                 token = "cw37fBYJd9VAS45mLDXEtKmSpdpduuEyRO2BFVN2TrW"
