@@ -116,9 +116,8 @@ class EditView(MethodView):
                     'Content-Type': 'application/x-www-form-urlencoded',
                     'Authorization': 'Bearer cw37fBYJd9VAS45mLDXEtKmSpdpduuEyRO2BFVN2TrW'
                 }
-                # msg = "User "+str(g.userobj.name) + " updated their password on" + str(updated) + "."
-                msg = "hello"
-                # response = requests.post(url, headers=headers, data={'message': msg})
+                msg = "User "+str(g.userobj.name) + " updated their password on" + str(updated) + "."
+                response = requests.post(url, headers=headers, data={'message': msg})
 
                 # # Logging the notification response
                 # log.info(f"LINE Notify Response: {response.status_code}, {response.text}")
