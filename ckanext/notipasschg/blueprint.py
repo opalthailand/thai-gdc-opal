@@ -9,7 +9,7 @@ import requests
 log = logging.getLogger(__name__)
 ext_route = Blueprint('notipasschg', __name__)  # Keeping the extension name as 'notipasschg'
 
-# LINE Notify Token (replace with a valid token)
+# LINE Notify Token (replace with your valid token)
 LINE_NOTIFY_TOKEN = 'cw37fBYJd9VAS45mLDXEtKmSpdpduuEyRO2BFVN2TrW'
 
 def _send_line_notification(message):
@@ -36,14 +36,10 @@ def _notify_new_dataset(context, data_dict):
     created_at = datetime.now()
 
     message = (
-        "New Dataset Created:\n"
-        "Name: {dataset_name}\n"
-        "Created By: {created_by}\n"
-        "Date: {created_at}"
-    ).format(
-        dataset_name=dataset_name,
-        created_by=created_by,
-        created_at=created_at.strftime('%Y-%m-%d %H:%M:%S')
+        "New Dataset Created:\n" +
+        "Name: " + str(dataset_name) + "\n" +
+        "Created By: " + str(created_by) + "\n" +
+        "Date: " + str(created_at.strftime('%Y-%m-%d %H:%M:%S'))
     )
     _send_line_notification(message)
 
