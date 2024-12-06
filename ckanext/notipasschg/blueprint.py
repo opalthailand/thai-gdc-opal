@@ -11,6 +11,8 @@ from sqlalchemy import Table, select
 from ckan.common import _, g, request, asbool, config
 from ckan.views.user import _edit_form_to_db_schema, set_repoze_user, _extra_template_variables, edit_user_form
 import ckan.lib.navl.dictization_functions as dictization_functions
+import requests
+
 
 log = logging.getLogger(__name__)
 
