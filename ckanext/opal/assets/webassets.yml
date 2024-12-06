@@ -1,0 +1,14 @@
+# opal-js:
+#   filter: rjsmin
+#   output: ckanext-opal/%(version)s-opal.js
+#   contents:
+#     - js/opal.js
+#   extra:
+#     preload:
+#       - base/main
+
+# opal-css:
+#   filter: cssrewrite
+#   output: ckanext-opal/%(version)s-opal.css
+#   contents:
+#     - css/opal.css

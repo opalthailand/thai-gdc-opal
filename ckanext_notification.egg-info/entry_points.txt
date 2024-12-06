@@ -1,5 +1,0 @@
-
-        [ckan.plugins]
-	# Add plugins here, eg
-	notification=ckanext.notification.plugin:TwitterNotificationPlugin
-	
