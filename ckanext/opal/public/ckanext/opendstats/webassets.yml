@@ -1,0 +1,21 @@
+opendstats-js:
+  filter: rjsmin
+  output: ckanext-opendstats/%(version)s-opendstats.js
+  contents:
+    - js/echarts.min.js
+    - js/echarts-wordcloud.min.js
+    - js/opendstats.js
+    - js/FileSaver.js
+    - js/tableExport.js
+
+opendstats-css:
+  filter: cssrewrite
+  output: ckanext-opendstats/%(version)s-opendstats.css
+  contents:
+    - css/opendstats.css
+
+opendstats-echarts:
+  filter: rjsmin
+  output: ckanext-opendstats/%(version)s-echarts.js
+  contents:
+    - js/echarts.min.js
