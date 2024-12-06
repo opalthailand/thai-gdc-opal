@@ -17,7 +17,7 @@ import ckan.lib.navl.dictization_functions as dictization_functions
 log = logging.getLogger(__name__)
 
 ext_route = Blueprint('notipasschg', __name__)
-log = logging.getLogger(__name__)
+log.setLevel(logging.INFO)  # Ensure logging is set at INFO level or higher
 _check_access = logic.check_access
 
 def _get_sysadmin():
@@ -109,17 +109,23 @@ class EditView(MethodView):
                 sysadmins = _get_sysadmin()
 
                 # LINE Notify Integration
-                url = 'https://notify-api.line.me/api/notify'
-                token = "cw37fBYJd9VAS45mLDXEtKmSpdpduuEyRO2BFVN2TrW"
-                headers = {
-                    'Content-Type': 'application/x-www-form-urlencoded',
-                    'Authorization': f'Bearer {token}'
-                }
-                msg = f'User "{g.userobj.name}" updated their password on {updated}.'
-                response = requests.post(url, headers=headers, data={'message': msg})
+                try:
+                    url = 'https://notify-api.line.me/api/notify'
+                    token = "cw37fBYJd9VAS45mLDXEtKmSpdpduuEyRO2BFVN2TrW"
+                    headers = {
+                        'Content-Type': 'application/x-www-form-urlencoded',
+                        'Authorization': f'Bearer {token}'
+                    }
+                    msg = f'User "{g.userobj.name}" updated their password on {updated}.'
+                    response = requests.post(url, headers=headers, data={'message': msg})
 
-                # Logging the notification response
-                log.info(f"LINE Notify Response: {response.status_code}, {response.text}")
+                    # Check response status
+                    if response.status_code != 200:
+                        log.error(f"LINE Notify failed: {response.status_code} - {response.text}")
+                    else:
+                        log.info(f"LINE Notify sent successfully: {response.text}")
+                except Exception as e:
+                    log.error(f"Error during LINE Notify integration: {e}")
 
         except logic.NotAuthorized:
             base.abort(403, _(u'Unauthorized to edit user %s') % id)
