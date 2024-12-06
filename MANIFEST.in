@@ -1,5 +1,4 @@
 include README.rst
 include LICENSE
 include requirements.txt
-recursive-include ckanext/myorgexample *.html *.json *.js *.less *.css *.mo *.yml
-recursive-include ckanext/myorgexample/migration *.ini *.py *.mako
+recursive-include ckanext/dataplatform *.html *.json *.js *.less *.css *.mo

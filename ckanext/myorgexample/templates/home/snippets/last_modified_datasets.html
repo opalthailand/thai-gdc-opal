@@ -1,9 +1,0 @@
-<div class="col-md-12">
-    {% for dataset in datasets %}
-    <div class="blockContentSearchData">
-        <a href="{{ h.url_for('%s.read' % dataset.type, id=dataset.name) }}" class="textHeaderContentSearch">{{ dataset.title }}</a><br>
-        <i class="fa fa-calendar" aria-hidden="true"></i> {{ h.myorg_to_thaidate(dataset.date_modified) }}
-    </div>
-    {% endfor %}
-</div>
-
