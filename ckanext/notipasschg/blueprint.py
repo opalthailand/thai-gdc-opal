@@ -110,18 +110,18 @@ class EditView(MethodView):
                     'site_url': config.get('ckan.site_url'),
                 }
 
-                # LINE Notify Integration
-                url = 'https://notify-api.line.me/api/notify'
-                token = "cw37fBYJd9VAS45mLDXEtKmSpdpduuEyRO2BFVN2TrW"
-                headers = {
-                    'Content-Type': 'application/x-www-form-urlencoded',
-                    'Authorization': f'Bearer {token}'
-                }
-                msg = f'User "{g.userobj.name}" updated their password on {updated}.'
-                response = requests.post(url, headers=headers, data={'message': msg})
+                # # LINE Notify Integration
+                # url = 'https://notify-api.line.me/api/notify'
+                # token = "cw37fBYJd9VAS45mLDXEtKmSpdpduuEyRO2BFVN2TrW"
+                # headers = {
+                #     'Content-Type': 'application/x-www-form-urlencoded',
+                #     'Authorization': f'Bearer {token}'
+                # }
+                # msg = f'User "{g.userobj.name}" updated their password on {updated}.'
+                # response = requests.post(url, headers=headers, data={'message': msg})
 
-                # Logging the notification response
-                log.info(f"LINE Notify Response: {response.status_code}, {response.text}")
+                # # Logging the notification response
+                # log.info(f"LINE Notify Response: {response.status_code}, {response.text}")
 
         except logic.NotAuthorized:
             base.abort(403, _(u'Unauthorized to edit user %s') % id)
