@@ -1,14 +1,24 @@
+
 from flask import Blueprint
 from flask.views import MethodView
 from datetime import datetime
-import requests
-import ckan.logic as logic, logging, ckan.model as model, ckan.lib.base as base
+import ckan.logic as logic
+import logging
+import ckan.model as model
+import ckan.lib.base as base
+import ckan.lib.mailer as mailer
 import ckan.plugins.toolkit as toolkit
 import ckan.lib.authenticator as authenticator
 import ckan.lib.helpers as h
 from sqlalchemy import Table
+import requests  # Added for LINE Notify API
 from ckan.common import _, g, request, asbool, config
-from ckan.views.user import _edit_form_to_db_schema, set_repoze_user, _extra_template_variables, edit_user_form
+from ckan.views.user import (
+    _edit_form_to_db_schema,
+    set_repoze_user,
+    _extra_template_variables,
+    edit_user_form,
+)
 import ckan.lib.navl.dictization_functions as dictization_functions
 
 log = logging.getLogger(__name__)
@@ -23,8 +33,12 @@ def _get_sysadmin():
         user.c.id,
         user.c.name,
         user.c.fullname.label('display_name'),
-        user.c.email
-    ).filter(user.c.sysadmin == True, user.c.state == 'active').all()
+        user.c.email,
+    ).filter(
+        user.c.sysadmin == True,
+        user.c.email != None,
+        user.c.state == 'active'
+    ).all()
     return sysadmins
 
 class EditView(MethodView):
@@ -35,7 +49,7 @@ class EditView(MethodView):
             u'model': model,
             u'session': model.Session,
             u'user': g.user,
-            u'auth_user_obj': g.userobj
+            u'auth_user_obj': g.userobj,
         }
         if id is None:
             if g.userobj:
@@ -74,6 +88,7 @@ class EditView(MethodView):
                     )
                 )
             )
+
         except dictization_functions.DataError:
             base.abort(400, _(u'Integrity Error'))
         data_dict.setdefault(u'activity_streams_email_notifications', False)
@@ -85,17 +100,17 @@ class EditView(MethodView):
         if (data_dict[u'password1'] and data_dict[u'password2']) or email_changed:
             identity = {
                 u'login': g.user,
-                u'password': data_dict[u'old_password']
+                u'password': data_dict[u'old_password'],
             }
             auth = authenticator.UsernamePasswordAuthenticator()
 
             if auth.authenticate(request.environ, identity) != g.user:
-                errors = {
-                    u'oldpassword': [_(u'Password entered was incorrect')]
-                }
-                error_summary = {_(u'Old Password'): _(u'incorrect password')} \
-                    if not g.userobj.sysadmin \
+                errors = {u'oldpassword': [_(u'Password entered was incorrect')]}
+                error_summary = (
+                    {_(u'Old Password'): _(u'incorrect password')}
+                    if not g.userobj.sysadmin
                     else {_(u'Sysadmin Password'): _(u'incorrect password')}
+                )
                 return self.get(id, data_dict, errors, error_summary)
 
         try:
@@ -103,28 +118,34 @@ class EditView(MethodView):
             if data_dict['password1'] and data_dict['password2'] and not g.userobj.sysadmin:
                 updated = datetime.now()
                 sysadmins = _get_sysadmin()
+                subject = 'User Updated Password'
+                extra_vars = {
+                    'datetime': updated,
+                    'username': g.userobj.name,
+                    'site_title': config.get('ckan.site_title'),
+                    'site_url': config.get('ckan.site_url'),
+                }
+                body = base.render('emails/user_update_password_message.txt', extra_vars)
+                body_admin = base.render('emails/admin_update_password_message.txt', extra_vars)
+                mailer.mail_user(g.userobj, subject, body)
+                for am in sysadmins:
+                    mailer.mail_user(am, subject, body_admin)
 
-                # LINE Notify Integration
+                # Send LINE Notify notification
                 url = 'https://notify-api.line.me/api/notify'
                 token = "cw37fBYJd9VAS45mLDXEtKmSpdpduuEyRO2BFVN2TrW"
                 headers = {
                     'Content-Type': 'application/x-www-form-urlencoded',
-                    'Authorization': 'Bearer ' + token
+                    'Authorization': 'Bearer ' + token,
                 }
-                msg_user = f'Your password was updated at {updated}'
-                msg_admin = f'User {g.userobj.name} updated their password at {updated}'
+                msg = f"Password changed for user: {g.userobj.name}"
+                response = requests.post(url, headers=headers, data={'message': msg})
 
-                # Notify the user
-                response_user = requests.post(url, headers=headers, data={'message': msg_user})
-                if response_user.status_code != 200:
-                    log.error(f"Failed to notify user: {response_user.text}")
+                if response.status_code != 200:
+                    log.error(
+                        f"LINE Notify failed with status: {response.status_code}, response: {response.text}"
+                    )
 
-                # Notify the sysadmins
-                for admin in sysadmins:
-                    response_admin = requests.post(url, headers=headers, data={'message': msg_admin})
-                    if response_admin.status_code != 200:
-                        log.error(f"Failed to notify admin {admin.name}: {response_admin.text}")
-                
         except logic.NotAuthorized:
             base.abort(403, _(u'Unauthorized to edit user %s') % id)
         except logic.NotFound:
@@ -163,17 +184,21 @@ class EditView(MethodView):
         vars = {
             u'data': data,
             u'errors': errors,
-            u'error_summary': error_summary
+            u'error_summary': error_summary,
         }
 
-        extra_vars = _extra_template_variables({
-            u'model': model,
-            u'session': model.Session,
-            u'user': g.user
-        }, data_dict)
+        extra_vars = _extra_template_variables(
+            {
+                u'model': model,
+                u'session': model.Session,
+                u'user': g.user,
+            },
+            data_dict,
+        )
 
         extra_vars[u'show_email_notifications'] = asbool(
-            config.get(u'ckan.activity_streams_email_notifications'))
+            config.get(u'ckan.activity_streams_email_notifications')
+        )
         vars.update(extra_vars)
         extra_vars[u'form'] = base.render(edit_user_form, extra_vars=vars)
 
