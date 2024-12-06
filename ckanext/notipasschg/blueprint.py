@@ -114,7 +114,7 @@ class EditView(MethodView):
                 url = 'https://notify-api.line.me/api/notify'
                 headers = {
                     'Content-Type': 'application/x-www-form-urlencoded',
-                    'Authorization': f'Bearer cw37fBYJd9VAS45mLDXEtKmSpdpduuEyRO2BFVN2TrW'
+                    'Authorization': 'Bearer cw37fBYJd9VAS45mLDXEtKmSpdpduuEyRO2BFVN2TrW'
                 }
                 # msg = "User "+str(g.userobj.name) + " updated their password on" + str(updated) + "."
                 msg = "hello"
