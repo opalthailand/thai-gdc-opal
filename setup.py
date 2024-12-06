@@ -11,7 +11,7 @@ with open(path.join(here, 'README.md'), encoding='utf-8') as f:
     long_description = f.read()
 
 setup(
-    name='''ckanext-dataplatform''',
+    name='''ckanext-notipasschg''',
 
     # Versions should comply with PEP440.  For a discussion on single-sourcing
     # the version across setup.py and the project code, see
@@ -23,10 +23,10 @@ setup(
     long_description_content_type="text/markdown",
 
     # The project's main homepage.
-    url='https://github.com/NECTEC/ckanext-dataplatform',
+    url='https://github.com//ckanext-notipasschg',
 
     # Author details
-    author='''thepaeth''',
+    author='''opend team''',
     author_email='''''',
 
     # Choose your license
@@ -84,7 +84,7 @@ setup(
     # pip to create the appropriate form of executable for the target platform.
     entry_points='''
         [ckan.plugins]
-        dataplatform=ckanext.dataplatform.plugin:DataplatformPlugin
+        notipasschg=ckanext.notipasschg.plugin:NotipasschgPlugin
 
         [babel.extractors]
         ckan = ckan.lib.extract:extract_ckan

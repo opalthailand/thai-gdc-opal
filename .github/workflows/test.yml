@@ -44,5 +44,5 @@ jobs:
 
         ckan -c test.ini db init
     - name: Run tests
-      run: pytest --ckan-ini=test.ini --cov=ckanext.dataplatform --disable-warnings ckanext/dataplatform
+      run: pytest --ckan-ini=test.ini --cov=ckanext.notipasschg --disable-warnings ckanext/notipasschg
 
