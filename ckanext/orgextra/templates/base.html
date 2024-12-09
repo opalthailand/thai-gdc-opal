@@ -1,21 +1,20 @@
 {% ckan_extends %}
 
-{% block scripts %}
-  {{ super() }}
-  {% asset 'orgextra/orgextra_js' %}
-{% endblock %}
-
 {% block body_extras -%}
-    {{ super() }}
-    <div id="cookieNotice" class="myDiv" style="display: none;">
-        <p class="txt-cookie">เว็บไซต์นี้ใช้ "คุกกี้" ...</p>
-        <p class="txt-cookie">Users:</p>
-        <ul>
-        {% for user in get_users() %}
-            <li>{{ user }}</li>
-        {% endfor %}
-        </ul>
-        <button onclick="acceptCookieConsent();">ยอมรับคุกกี้</button>
-        <div class="close-cookies" onclick="closeCookieConsent();">x</div>
-    </div>
+  {{ super() }}
+  <div id="cookieNotice" class="myDiv" style="display: none;">
+      <p class="txt-cookie">เว็บไซต์นี้ใช้ "คุกกี้" ...</p>
+      {% if c.user_list_error %}
+          <p class="error-message">{{ c.user_list_error }}</p>
+      {% else %}
+          <p class="txt-cookie">Users:</p>
+          <ul>
+          {% for user in get_users() %}
+              <li>{{ user }}</li>
+          {% endfor %}
+          </ul>
+      {% endif %}
+      <button onclick="acceptCookieConsent();">ยอมรับคุกกี้</button>
+      <div class="close-cookies" onclick="closeCookieConsent();">x</div>
+  </div>
 {%- endblock %}

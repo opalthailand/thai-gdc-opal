@@ -3,8 +3,7 @@
 import ckan.plugins as plugins
 import ckan.plugins.toolkit as toolkit
 import ckan.model as model
-
-
+from sqlalchemy import Table, select
 
 class OrgextraPlugin(plugins.SingletonPlugin):
     plugins.implements(plugins.IConfigurer)
@@ -13,10 +12,13 @@ class OrgextraPlugin(plugins.SingletonPlugin):
 
     def get_users(self):
         try:
-            users = model.User.all()
-            return [user.name for user in users]
+            user_table = model.User.__table__ # Access the user table directly
+            query = select([user_table.c.name]).where(user_table.c.state == 'active') # Select only active users
+            result = model.Session.execute(query).fetchall()
+            return [row[0] for row in result] # Extract usernames
         except Exception as e:
-            return []  # Handle potential errors gracefully
+            toolkit.c.user_list_error = "Error retrieving users: " + str(e) # Store error message for template
+            return []
 
     def update_config(self, config_):
         toolkit.add_template_directory(config_, 'templates')
