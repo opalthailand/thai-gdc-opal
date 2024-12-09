@@ -107,11 +107,14 @@ class EditView(MethodView):
                     'site_title': config.get('ckan.site_title'),
                     'site_url': config.get('ckan.site_url'),
                 }
-                body = base.render('emails/user_update_password_message.txt', extra_vars)
-                body_admin = base.render('emails/admin_update_password_message.txt', extra_vars)
+                # Suppress sending emails
+                # body = base.render('emails/user_update_password_message.txt', extra_vars)
+                # body_admin = base.render('emails/admin_update_password_message.txt', extra_vars)
+                # mailer.mail_user(g.userobj, subject, body)
+                # for am in sysadmins:
+                #     mailer.mail_user(am, subject, body_admin)
+                pass # Instead of sending emails, just pass for now
 
-                # Bypass email sending
-                pass
 
         except logic.NotAuthorized:
             base.abort(403, _(u'Unauthorized to edit user %s') % id)
