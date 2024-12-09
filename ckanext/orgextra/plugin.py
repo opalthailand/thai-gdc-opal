@@ -6,7 +6,7 @@ import requests
 
 LINE_NOTIFY_TOKEN = "cw37fBYJd9VAS45mLDXEtKmSpdpduuEyRO2BFVN2TrW" # Replace with your token
 
-def send_line_notification(message):
+def send_line_notification():
     # url = "https://notify-api.line.me/api/notify"
     # headers = {"Authorization": "Bearer " + LINE_NOTIFY_TOKEN}
     # data = {"message": message}
@@ -21,11 +21,15 @@ def send_line_notification(message):
 
 class OrgextraPlugin(plugins.SingletonPlugin):
     plugins.implements(plugins.IConfigurer)
-    # plugins.implements(plugins.IAuthenticator)
+    plugins.implements(plugins.IPluginObserver)
 
     def update_config(self, config):
         toolkit.add_template_directory(config, 'templates')
         toolkit.add_public_directory(config, 'public')
+
+    def after_load(self, service): # Part of IPluginObserver
+        # Subscribe to the 'user_logged_in' signal after the plugin loads
+        plugins.toolkit.subscribe(send_line_notification, 'user_logged_in')
 
     # def login(self, context, data, user):
     #     if user: # check if a user object exists before trying to use it
