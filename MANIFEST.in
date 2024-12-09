@@ -1,5 +1,3 @@
-include README.rst
-include LICENSE
 include requirements.txt
 recursive-include ckanext/notipasschg *.html *.json *.js *.less *.css *.mo *.yml
 recursive-include ckanext/notipasschg/migration *.ini *.py *.mako
