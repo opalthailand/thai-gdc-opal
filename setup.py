@@ -1,16 +1,16 @@
 # -*- coding: utf-8 -*-
-# Always prefer setuptools over distutils
-from setuptools import setup, find_packages
+from setuptools import setup, find_packages  # Always prefer setuptools over distutils
 from codecs import open  # To use a consistent encoding
 from os import path
 
 here = path.abspath(path.dirname(__file__))
 
 # Get the long description from the relevant file
-long_description = ""
+with open(path.join(here, 'README.rst'), encoding='utf-8') as f:
+    long_description = f.read()
 
 setup(
-    name='''ckanext-orgextra''',
+    name='''ckanext-thai_gdc''',
 
     # Versions should comply with PEP440.  For a discussion on single-sourcing
     # the version across setup.py and the project code, see
@@ -19,13 +19,12 @@ setup(
 
     description='''''',
     long_description=long_description,
-    long_description_content_type="text/markdown",
 
     # The project's main homepage.
-    url='https://github.com/opend/ckanext-orgextra',
+    url='https://github.com//ckanext-thai_gdc',
 
     # Author details
-    author='''NECTEC''',
+    author='''''',
     author_email='''''',
 
     # Choose your license
@@ -54,14 +53,13 @@ setup(
     # You can just specify the packages manually here if your project is
     # simple. Or you can use find_packages().
     packages=find_packages(exclude=['contrib', 'docs', 'tests*']),
-        namespace_packages=['ckanext'],
+    namespace_packages=['ckanext'],
 
     install_requires=[
       # CKAN extensions should not list dependencies here, but in a separate
       # ``requirements.txt`` file.
       #
-      # http://docs.ckan.org/en/latest/extensions/best-practices.html
-      # add-third-party-libraries-to-requirements-txt
+      # http://docs.ckan.org/en/latest/extensions/best-practices.html#add-third-party-libraries-to-requirements-txt
     ],
 
     # If there are data files included in your packages that need to be
@@ -73,8 +71,7 @@ setup(
 
     # Although 'package_data' is the preferred approach, in some case you may
     # need to place data files outside of your packages.
-    # see http://docs.python.org/3.4/distutils/setupscript.html
-    # installing-additional-files
+    # see http://docs.python.org/3.4/distutils/setupscript.html#installing-additional-files
     # In this case, 'data_file' will be installed into '<sys.prefix>/my_data'
     data_files=[],
 
@@ -83,7 +80,7 @@ setup(
     # pip to create the appropriate form of executable for the target platform.
     entry_points='''
         [ckan.plugins]
-        orgextra=ckanext.orgextra.plugin:OrgextraPlugin
+        thai_gdc=ckanext.thai_gdc.plugin:Thai_GDCPlugin
 
         [babel.extractors]
         ckan = ckan.lib.extract:extract_ckan

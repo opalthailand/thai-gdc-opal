@@ -1,0 +1,84 @@
+{% import 'macros/form.html' as form %}
+
+<script>
+  function sSelect_data_category(){
+      index = document.getElementById('field-data_category').value;
+      var sDataClassLevel = document.getElementById("field-data_classification");
+      if(index == 'ข้อมูลสาธารณะ'){
+        document.getElementById('field-accessible_condition').value = 'ไม่มีการจำกัดการเข้าถึงข้อมูล';
+        for (var i = 0; i < sDataClassLevel.length; i++) {
+          var txt = sDataClassLevel.options[i].attributes[0].nodeValue;
+          if(txt != '' && txt != 'เปิดเผย') {
+            $(sDataClassLevel.options[i]).attr('disabled', 'disabled').hide();
+          }
+          else {
+            $(sDataClassLevel.options[i]).removeAttr('disabled').show();
+          }
+        }
+      } else if(index == 'ข้อมูลใช้ภายใน') {
+        document.getElementById('field-accessible_condition').value = '';
+        for (var i = 0; i < sDataClassLevel.length; i++) {
+          var txt = sDataClassLevel.options[i].attributes[0].nodeValue;
+          if(txt != '' && txt != 'ชั้นเผยแพร่ภายในองค์กร') {
+            $(sDataClassLevel.options[i]).attr('disabled', 'disabled').hide();
+          }
+          else {
+            $(sDataClassLevel.options[i]).removeAttr('disabled').show();
+          }
+        }
+      } else if(index == 'ข้อมูลส่วนบุคคล') {
+        document.getElementById('field-accessible_condition').value = '';
+        for (var i = 0; i < sDataClassLevel.length; i++) {
+          var txt = sDataClassLevel.options[i].attributes[0].nodeValue;
+          if(txt != '' && txt != 'ชั้นเผยแพร่ภายในองค์กร' && txt != 'ลับ' && txt != 'ลับมาก') {
+            $(sDataClassLevel.options[i]).attr('disabled', 'disabled').hide();
+          }
+          else {
+            $(sDataClassLevel.options[i]).removeAttr('disabled').show();
+          }
+        }
+      } else {
+        document.getElementById('field-accessible_condition').value = '';
+        for (var i = 0; i < sDataClassLevel.length; i++) {
+          var txt = sDataClassLevel.options[i].attributes[0].nodeValue;
+          if(txt != '' && txt != 'ลับ' && txt != 'ลับมาก' && txt != 'ลับที่สุด') {
+            $(sDataClassLevel.options[i]).attr('disabled', 'disabled').hide();
+          }
+          else {
+            $(sDataClassLevel.options[i]).removeAttr('disabled').show();
+          }
+        }
+      }
+      sDataClassLevel.selectedIndex = 0;
+  }
+  </script>
+
+{%- set options=[] -%}
+{%- for c in h.scheming_field_choices(field) -%}
+    {%- do options.append({
+      'value': c.value|string,
+      'text': h.scheming_language_text(c.label) }) -%}
+{%- endfor -%}
+{%- if data[field.field_name] -%}
+  {%- set option_selected = data[field.field_name]|string -%}
+{%- else -%}
+  {%- set option_selected = None -%}
+{%- endif -%}
+
+{% call form.select(
+    field.field_name,
+    id='field-' + field.field_name,
+    label=h.scheming_language_text(field.label),
+    options=options,
+    selected=option_selected,
+    error=errors[field.field_name],
+    classes=['control-medium'],
+    attrs=dict({"class": "form-control", 'onchange' : "sSelect_data_category();"}, **(field.get('form_attrs', {}))),
+    is_required=h.scheming_field_required(field)
+    )
+%}
+
+{% endcall %}
+
+
+

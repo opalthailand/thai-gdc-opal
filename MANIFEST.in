@@ -1,3 +1,4 @@
+include README.rst
 include LICENSE
 include requirements.txt
-recursive-include ckanext/orgextra *.html *.json *.js *.less *.css *.mo
+recursive-include ckanext/thai_gdc *.html *.json *.js *.less *.css *.mo
