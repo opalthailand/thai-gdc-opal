@@ -1,20 +1,11 @@
 {% ckan_extends %}
 
-{% block body_extras -%}
-  {{ super() }}
-  <div id="cookieNotice" class="myDiv" style="display: none;">
-      <p class="txt-cookie">เว็บไซต์นี้ใช้ "คุกกี้" ...</p>
-      {% if c.user_list_error %}
-          <p class="error-message">{{ c.user_list_error }}</p>
-      {% else %}
-          <p class="txt-cookie">Users:</p>
-          <ul>
-          {% for user in get_users() %}
-              <li>{{ user }}</li>
-          {% endfor %}
-          </ul>
-      {% endif %}
-      <button onclick="acceptCookieConsent();">ยอมรับคุกกี้</button>
-      <div class="close-cookies" onclick="closeCookieConsent();">x</div>
-  </div>
-{%- endblock %}
+{% block content %}
+    <h2>All Organizations</h2>
+    <ul>
+        {% for org in get_all_organizations() %}
+            <li><a href="{{ h.url_for('organization_read', id=org.id) }}">{{ org.title }}</a></li>
+        {% endfor %}
+    </ul>
+    {{ super() }}
+{% endblock %}
