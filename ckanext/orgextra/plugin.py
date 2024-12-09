@@ -27,9 +27,9 @@ class OrgextraPlugin(plugins.SingletonPlugin):
         toolkit.add_template_directory(config, 'templates')
         toolkit.add_public_directory(config, 'public')
 
-    def login(self, context, data, user):
-        if user: # check if a user object exists before trying to use it
-            send_line_notification("User")
-        else:
-            print("Login attempt with no user information.") #  Handle this case as needed.
-        return (context, data, user)
+    # def login(self, context, data, user):
+    #     if user: # check if a user object exists before trying to use it
+    #         send_line_notification("User")
+    #     else:
+    #         print("Login attempt with no user information.") #  Handle this case as needed.
+    #     return (context, data, user)
