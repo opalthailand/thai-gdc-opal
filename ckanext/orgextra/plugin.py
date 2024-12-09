@@ -21,7 +21,7 @@ def send_line_notification(message):
 
 class OrgextraPlugin(plugins.SingletonPlugin):
     plugins.implements(plugins.IConfigurer)
-    plugins.implements(plugins.IAuthenticator)
+    # plugins.implements(plugins.IAuthenticator)
 
     def update_config(self, config):
         toolkit.add_template_directory(config, 'templates')
