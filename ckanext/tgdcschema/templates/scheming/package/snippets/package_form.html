@@ -1,0 +1,86 @@
+{% extends 'package/new_package_form.html' %}
+
+{% block errors %}
+  {%- if errors -%}
+    {%- set schema = h.scheming_get_dataset_schema(dataset_type) -%}
+    {%- snippet 'scheming/snippets/errors.html',
+      errors=errors, fields=schema.dataset_fields,
+      entity_type='dataset', object_type=dataset_type -%}
+  {%- endif -%}
+{% endblock %}
+
+{% block basic_fields %}
+  {%- if not dataset_type -%}
+    <p>
+    dataset_type not passed to template. your version of CKAN
+    might not be compatible with ckanext-scheming
+    </p>
+  {%- endif -%}
+  {%- set schema = h.scheming_get_dataset_schema(dataset_type) -%}
+  {%- for field in schema.dataset_fields -%}
+    {%- if field.form_snippet is not none -%}      
+      {%- snippet 'scheming/snippets/form_field.html',
+        field=field, data=data, errors=errors, licenses=c.licenses,
+        entity_type='dataset', object_type=dataset_type, form_style=form_style -%}
+    {%- endif -%}
+  {%- endfor -%}
+  {%- if 'resource_fields' not in schema -%}
+    <!-- force controller to skip resource-editing step for this type -->
+    <input type="hidden" name="_ckan_phase" value="" />
+  {%- endif -%}
+  <script src="https://code.jquery.com/jquery-3.5.1.min.js"></script>
+  <script>
+    $(document).ready(function(){
+        $("#suggest").click(function(){
+          var description = ($('#field-title').val()+' '+$('#field-notes').val()).replace(/(?:\r\n|\r|\n)/g, '').trim();
+          console.log(description);
+          $.ajax({
+            type: 'POST',
+            url: 'https://data.go.th/suggestion/tagrecomm',
+            data: JSON.stringify({ 'description': description }),
+            contentType: "application/json; charset=utf-8",
+            dataType: "json",
+          }).then(function (data) {
+            var tags = $('#field-tag_string').select2('val');
+            console.log(data.tag);
+            if(data.tag.length>0){
+              $.each(data.tag, function (key, value) {
+                tags.push(value.name);
+                $('#field-tag_string').select2('val',tags);
+              });
+            }/* else {
+              alert("ไม่พบคำสำคัญที่แนะนำ");
+            }*/
+          });
+        });
+        $("#field-notes").focusout(function(){
+          var description = ($('#field-title').val()+' '+$('#field-notes').val()).replace(/(?:\r\n|\r|\n)/g, '').trim();
+          console.log(description);
+          $.ajax({
+            type: 'POST',
+            url: 'https://data.go.th/suggestion/tagrecomm',
+            data: JSON.stringify({ 'description': description }),
+            contentType: "application/json; charset=utf-8",
+            dataType: "json",
+          }).then(function (data) {
+            var tags = $('#field-tag_string').select2('val');
+            console.log(data.tag);
+            if(data.tag.length>0){
+              $.each(data.tag, function (key, value) {
+                tags.push(value.name);
+                $('#field-tag_string').select2('val',tags);
+              });
+            }/* else {
+              alert("ไม่พบคำสำคัญที่แนะนำ");
+            }*/
+          });
+        });
+    });
+  </script>
+{% endblock %}
+
+{% block metadata_fields %}
+{% endblock %}
+
+{% block disclaimer %}
+{% endblock %}

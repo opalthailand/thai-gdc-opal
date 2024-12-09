@@ -1,0 +1,29 @@
+{% ckan_extends %}
+
+{% block metadata_date %}
+    {% if pkg.metadata_created %}
+    <tr>
+        <td>{{ _("Dataset create date") }}</td>
+        <td>
+            {% if h.gdc_get_harvest_detail(pkg.id) %}
+                {{h.sbs_theme_day_thai(h.date_str_to_datetime(h.gdc_get_harvest_detail(pkg.id,True).content.metadata_created))}}
+            {% else %}
+                {{h.sbs_theme_day_thai(h.date_str_to_datetime(pkg.metadata_created))}}
+            {% endif %}
+        </td>
+    </tr>
+    {% endif %}
+
+    {% if pkg.metadata_modified %}
+    <tr>
+        <td>{{ _("Maintain date") }}</td>
+        <td>
+            {% if h.gdc_get_harvest_detail(pkg.id) %}
+                {{h.sbs_theme_day_thai(h.date_str_to_datetime(h.gdc_get_harvest_detail(pkg.id,True).content.metadata_modified))}}
+            {% else %}
+                {{h.sbs_theme_day_thai(h.date_str_to_datetime(pkg.metadata_modified))}}
+            {% endif %}
+        </td>
+    </tr>
+    {% endif %}
+{% endblock %}

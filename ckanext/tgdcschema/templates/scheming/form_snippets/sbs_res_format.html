@@ -1,0 +1,44 @@
+{% import 'macros/form.html' as form %}
+
+{%
+set res_format_options = [
+    {"value":"API","label":"API"},
+    {"value":"ASCII","label":"ASCII"},
+    {"value":"CSV","label":"CSV"},
+    {"value":"DOC","label":"DOC"},
+    {"value":"DOCX","label":"DOCX"},
+    {"value":"HTML","label":"HTML"},
+    {"value":"JPG","label":"JPG"},
+    {"value":"JPEG","label":"JPEG"},
+    {"value":"JSON","label":"JSON"},
+    {"value":"KMZ","label":"KMZ"},
+    {"value":"ODS","label":"ODS"},
+    {"value":"PDF","label":"PDF"},
+    {"value":"PPT","label":"PPT"},
+    {"value":"RAR","label":"RAR"},
+    {"value":"RDF","label":"RDF"},
+    {"value":"SHP","label":"SHP"},
+    {"value":"URL","label":"URL"},
+    {"value":"XLS","label":"XLS"},
+    {"value":"XLSX","label":"XLSX"},
+    {"value":"XML","label":"XML"},
+    {"value":"ZIP","label":"ZIP"}
+]
+%}
+
+{% call form.select(
+    field.field_name,
+    id='field-' + field.field_name,
+    label=h.scheming_language_text(field.label),
+    options=res_format_options,
+    selected=data[field.field_name],
+    error=errors[field.field_name],
+    classes=['control-medium'],
+    attrs=field.form_attrs if 'form_attrs' in field else {
+      "data-module": "autocomplete"
+    },
+    is_required=h.scheming_field_required(field)
+    )
+%}
+
+{% endcall %}

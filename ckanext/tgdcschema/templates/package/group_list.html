@@ -1,0 +1,96 @@
+{% ckan_extends %}
+
+{% set pkg = pkg_dict %}
+{% set category_dict = h.scheming_group_schemas() %}
+
+{% block scripts %}
+{{ super() }}
+<script>
+        $(document).ready(function() {
+            {% for category in category_dict.keys()|sort %}
+                $('#field-add_group-{{category_dict[category]["group_type"]}}').prop('disabled', 'disabled');
+                $('#field-add_group-{{category_dict[category]["group_type"]}}').hide();
+            {% endfor %}
+            $('#field-add_group-category01').prop('disabled', false);
+            $('#field-add_group-category01').show();
+        });
+        $('#field-add_group-category').on('change', function() {
+            {% for category in category_dict.keys()|sort %}
+            $('#field-add_group-{{category_dict[category]["group_type"]}}').prop('disabled', 'disabled');
+            $('#field-add_group-{{category_dict[category]["group_type"]}}').hide();
+            {% endfor %}
+            {% for category in category_dict.keys()|sort %}
+            if(this.value == "field-add_group-{{category_dict[category]['group_type']}}") {
+                $('#field-add_group-{{category_dict[category]["group_type"]}}').prop('disabled', false);
+                $('#field-add_group-{{category_dict[category]["group_type"]}}').show();
+            }
+            {% endfor %}
+        });
+
+</script>
+{% endblock %}
+
+{% block group_form %}
+{% if h.check_access('package_update', {'id':pkg_dict.id }) %}
+<meta id="pkg-data" data-id="{{pkg.id}}" data-title="{{pkg.title}}" data-notes="{{pkg.notes}}">
+<div style="margin-top: 20px;">ประเภทกลุ่ม:</div>
+  <select id="field-add_group-category" name="group_added" style="width:100%" data-module="autocomplete">
+      {% for category in category_dict.keys()|sort %}
+          {% if h.gdc_get_all_groups_all_type(category_dict[category]['group_type']) %}
+          <option value="field-add_group-{{category_dict[category]['group_type']}}"> {{category_dict[category]['group_title']}}</option>
+          {% endif %}
+      {% endfor %}
+  </select>
+<form class="add-to-group" method="post">
+  {{ h.csrf_input() }}
+  กลุ่มชุดข้อมูล:
+  {% for category in category_dict.keys()|sort %}
+      {% set groups = h.gdc_get_all_groups_all_type(category_dict[category]['group_type']) %}
+      {% if groups %}
+          <select id="field-add_group-{{category_dict[category]['group_type']}}" name="group_added" style="width:100%" data-module="autocomplete">
+              {% for option in groups %}
+              <option value="{{ option[0] }}"> {{ option[1] }}</option>
+              {% endfor %}
+          </select>
+      {% endif %}
+  {% endfor %}
+  <p class="mrT10">
+      
+      <button type="submit" class="btn btn-primary" title="{{ _('Associate this group with this dataset') }}">{{
+          _('Add to group') }}
+      </button>
+      &nbsp;&nbsp;<button id="suggest" type="button" class="btn btn-success">แนะนำกลุ่ม</button>
+  </p>
+  </form>
+  {% endif %}
+  <script src="https://code.jquery.com/jquery-3.5.1.min.js"></script>
+  <script>
+    $(document).ready(function(){
+        $("#suggest").click(function(){
+          var pkg_data = $('#pkg-data').data();
+          id = pkg_data.id;
+          title = pkg_data.title.replace(/(?:\r\n|\r|\n)/g, '');
+          notes = pkg_data.notes.replace(/(?:\r\n|\r|\n)/g, '');
+          var description = (title+' '+notes).trim();
+          console.log(description)
+          $.ajax({
+            type: 'POST',
+            url: 'https://data.go.th/suggestion/catrecomm',
+            data: JSON.stringify({ 'description': description }),
+            contentType: "application/json; charset=utf-8",
+            dataType: "json",
+          }).then(function (data) {
+            console.log(data.category);
+            if(data.category.length>0){
+              $.each(data.category, function (key, value) {
+                console.log(value.name);
+                window.location.replace("/dataset/group_suggest/"+id+"/group/"+value.name);
+              });
+            } else {
+              alert("ไม่พบกลุ่มที่แนะนำ");
+            }
+          });
+        });
+    });
+  </script>
+{% endblock %}

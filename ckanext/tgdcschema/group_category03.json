@@ -1,0 +1,38 @@
+{
+  "scheming_version": 1,
+  "group_type": "category03",
+  "group_title": "เป้าหมายการพัฒนาอย่างยั่งยืน (SDGs)",
+  "group_image_url": "https://data.go.th/sbs/images/icon_category/sdg1.png",
+  "group_image_hoverover_url": "https://data.go.th/sbs/images/icon_category/sdg2.png",
+  "about_url": "http://github.com/ckan/ckanext-scheming",
+  "fields": [
+    {
+      "field_name": "title",
+      "label": "Name",
+      "validators": "ignore_missing unicode_safe",
+      "form_snippet": "large_text.html",
+      "form_attrs": {"data-module": "slug-preview-target"},
+      "form_placeholder": "My Group"
+    },
+    {
+      "field_name": "name",
+      "label": "URL",
+      "validators": "not_empty unicode_safe name_validator group_name_validator",
+      "form_snippet": "slug.html",
+      "form_placeholder": "my-group"
+    },
+    {
+      "field_name": "description",
+      "label": "Description",
+      "form_snippet": "markdown.html",
+      "form_placeholder": "A little information about my group..."
+    },
+    {
+      "field_name": "url",
+      "label": "Image URL",
+      "validators": "ignore_missing unicode_safe remove_whitespace",
+      "form_snippet": "organization_upload.html",
+      "form_placeholder": "http://example.com/image.png"
+    }
+  ]
+}

@@ -1,0 +1,14 @@
+# tgdcschema-js:
+#   filter: rjsmin
+#   output: ckanext-tgdcschema/%(version)s-tgdcschema.js
+#   contents:
+#     - js/tgdcschema.js
+#   extra:
+#     preload:
+#       - base/main
+
+# tgdcschema-css:
+#   filter: cssrewrite
+#   output: ckanext-tgdcschema/%(version)s-tgdcschema.css
+#   contents:
+#     - css/tgdcschema.css
