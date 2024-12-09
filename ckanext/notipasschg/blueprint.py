@@ -13,10 +13,7 @@ from ckan.views.user import _edit_form_to_db_schema, set_repoze_user, _extra_tem
 import ckan.lib.navl.dictization_functions as dictization_functions
 
 log = logging.getLogger(__name__)
-
 ext_route = Blueprint('notipasschg', __name__)
-log = logging.getLogger(__name__)
-_check_access = logic.check_access
 
 # Mock mailer for testing
 if toolkit.check_ckan_version(max_version='2.8.99'):
@@ -110,7 +107,7 @@ class EditView(MethodView):
 
         try:
             user = logic.get_action(u'user_update')(context, data_dict)
-            if data_dict['password1'] and data_dict['password2'] and not g.userobj.sysadmin:
+            if data_dict['password1'] and not g.userobj.sysadmin:
                 updated = datetime.now()
                 sysadmins = _get_sysadmin()
                 subject = 'User Updated Password'
