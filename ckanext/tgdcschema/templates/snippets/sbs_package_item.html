@@ -1,8 +1,0 @@
-{% ckan_extends %}
-
-{% block package_title %} 
-{% if h.gdc_get_harvest_detail(package.id) %}
-    <span title="นำเข้าจากภายนอก (Import by harvest)" style="margin-right:5px;"><img src="/sbs/images/icon_static/sync.png" style="height: 20px;" /></span>
-{% endif %}
-{{ super() }}
-{% endblock %}

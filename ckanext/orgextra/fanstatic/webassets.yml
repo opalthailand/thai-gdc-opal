@@ -1,0 +1,8 @@
+orgextra_js:
+  filter: rjsmin
+  output: ckanext-orgextra/%(version)s_orgextra.js
+  extra:
+    preload:
+      - base/main
+  contents:
+    - js/cookie_consent.js
