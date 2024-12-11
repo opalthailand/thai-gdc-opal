@@ -19,15 +19,13 @@ import numpy as np
 from ckanapi import LocalCKAN
 import datetime
 
-# import requests
+import requests
 # def send_line_notification(message):
 #     url = "https://notify-api.line.me/api/notify"
 #     headers = {"Authorization": "Bearer cw37fBYJd9VAS45mLDXEtKmSpdpduuEyRO2BFVN2TrW"}
 #     data = {"message": message}
 #     response = requests.post(url, headers=headers, data=data)
 
-def send_line_notification(message):
-    print('x')
 
 import logging
 log = logging.getLogger(__name__)
