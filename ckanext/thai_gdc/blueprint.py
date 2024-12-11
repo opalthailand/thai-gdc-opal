@@ -22,10 +22,13 @@ import datetime
 import requests
 def send_line_notification(message):
     url = "https://notify-api.line.me/api/notify"
-    headers = {"Authorization":"Bearer cw37fBYJd9VAS45mLDXEtKmSpdpduuEyRO2BFVN2TrW"}
+    headers = {"Authorization": "Bearer cw37fBYJd9VAS45mLDXEtKmSpdpduuEyRO2BFVN2TrW"}
     data = {"message": message}
     response = requests.post(url, headers=headers, data=data)
-    response.raise_for_status()
+    if response.status_code != 200:
+        print("Request failed with status code: {}".format(response.status_code))
+    else:
+        print("Notification sent successfully")
 
 import logging
 log = logging.getLogger(__name__)
