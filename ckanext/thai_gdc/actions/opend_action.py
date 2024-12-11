@@ -240,23 +240,7 @@ def resource_view_create(context, data_dict):
     pkg_dict = _get_action('package_patch')(dict(context, return_type='dict'),
         {'id': context['resource'].package_id})
     
-    resource = context.get('resource')
-    if resource:
-        # Inspect the object
-        send_line_notification(str(type(resource)))  # Log the type
-        send_line_notification(str(dir(resource)))   # Log available attributes
-
-        # Check and log extras
-        extras = getattr(resource, "extras", None)
-        if extras:
-            send_line_notification(str(extras))
-            # Access specific key
-            resource_cdp = extras.get(u'resource_cdp', 'Key not found')
-            send_line_notification(str(resource_cdp))
-        else:
-            send_line_notification("No extras attribute found")
-    else:
-        send_line_notification("Resource is None")
+    send_line_notification(str(context.get('resource').extras.get(u'resource_cdp')))
 
     return model_dictize.resource_view_dictize(resource_view, context)
 
