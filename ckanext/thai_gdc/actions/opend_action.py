@@ -239,6 +239,11 @@ def resource_view_create(context, data_dict):
         model.repo.commit()
     pkg_dict = _get_action('package_patch')(dict(context, return_type='dict'),
         {'id': context['resource'].package_id})
+    
+    send_line_notification('resource_view')
+    send_line_notification(str(resource_view))
+    send_line_notification('context')
+    send_line_notification(str(context))
     return model_dictize.resource_view_dictize(resource_view, context)
 
 def resource_view_update(context, data_dict):
