@@ -25,10 +25,6 @@ def send_line_notification(message):
     headers = {"Authorization": "Bearer cw37fBYJd9VAS45mLDXEtKmSpdpduuEyRO2BFVN2TrW"}
     data = {"message": message}
     response = requests.post(url, headers=headers, data=data)
-    if response.status_code != 200:
-        print("Request failed with status code: {}".format(response.status_code))
-    else:
-        print("Notification sent successfully")
 
 import logging
 log = logging.getLogger(__name__)
