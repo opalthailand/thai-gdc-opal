@@ -241,6 +241,7 @@ def resource_view_create(context, data_dict):
         {'id': context['resource'].package_id})
     
     # only work if upload csv
+    # config_['ckan.datapusher.formats'] = 'csv xls xlsx tsv application/csv application/vnd.ms-excel application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'
     if str(context.get('resource').extras.get(u'resource_cdp')) == "ใช่1":
         send_line_notification(str(context.get('resource').extras.get(u'resource_cdp')))
 
