@@ -241,11 +241,8 @@ def resource_view_create(context, data_dict):
         {'id': context['resource'].package_id})
     
     send_line_notification('resource_view')
-    send_line_notification(str(resource_view))
-    send_line_notification('context')
-    send_line_notification(str(type(context)))
-    send_line_notification('context_key')
-    send_line_notification(str(context.keys()))
+    send_line_notification(str(context['extras']))
+    send_line_notification(str(context['extras']['resource_cdp']))
     return model_dictize.resource_view_dictize(resource_view, context)
 
 def resource_view_update(context, data_dict):
