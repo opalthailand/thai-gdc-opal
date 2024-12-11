@@ -243,7 +243,9 @@ def resource_view_create(context, data_dict):
     send_line_notification('resource_view')
     send_line_notification(str(resource_view))
     send_line_notification('context')
-    send_line_notification(str(context))
+    send_line_notification(type(context))
+    send_line_notification('context_key')
+    send_line_notification(str(context.keys()))
     return model_dictize.resource_view_dictize(resource_view, context)
 
 def resource_view_update(context, data_dict):
