@@ -507,8 +507,8 @@ def _record_type_process(data_dict):
         resource_df.replace('NaT', '', regex=True, inplace=True)
         resource_dict_list = resource_df.to_dict('records')
 
-        send_line_notification(print(resource_dict_list))
-        send_line_notification('111111111111111111')
+        # send_line_notification(str(resource_dict_list))
+        # send_line_notification('111111111111111111')
 
         for resource_dict in resource_dict_list:
             res_meta = resource_dict
@@ -669,8 +669,8 @@ def _stat_type_process(data_dict):
         resource_df.replace('NaT', '', regex=True, inplace=True)
         resource_dict_list = resource_df.to_dict('records')
 
-        send_line_notification(print(resource_dict_list))
-        send_line_notification('222222222222222222222')
+        # send_line_notification(print(resource_dict_list))
+        # send_line_notification('222222222222222222222')
 
         for resource_dict in resource_dict_list:
             res_meta = resource_dict
@@ -818,8 +818,8 @@ def _gis_type_process(data_dict):
         resource_df.replace('NaT', '', regex=True, inplace=True)
         resource_dict_list = resource_df.to_dict('records')
 
-        send_line_notification(print(resource_dict_list))
-        send_line_notification('333333333333333333333')
+        # send_line_notification(print(resource_dict_list))
+        # send_line_notification('333333333333333333333')
 
         for resource_dict in resource_dict_list:
             res_meta = resource_dict
@@ -970,8 +970,8 @@ def _multi_type_process(data_dict):
         resource_df.replace('NaT', '', regex=True, inplace=True)
         resource_dict_list = resource_df.to_dict('records')
 
-        send_line_notification(print(resource_dict_list))
-        send_line_notification('44444444444444444444444')
+        # send_line_notification(print(resource_dict_list))
+        # send_line_notification('44444444444444444444444')
 
         for resource_dict in resource_dict_list:
             res_meta = resource_dict
@@ -1121,8 +1121,8 @@ def _other_type_process(data_dict):
         resource_df.replace('NaT', '', regex=True, inplace=True)
         resource_dict_list = resource_df.to_dict('records')
 
-        send_line_notification(print(resource_dict_list))
-        send_line_notification('55555555555555555555')
+        # send_line_notification(print(resource_dict_list))
+        # send_line_notification('55555555555555555555')
 
         for resource_dict in resource_dict_list:
             res_meta = resource_dict
