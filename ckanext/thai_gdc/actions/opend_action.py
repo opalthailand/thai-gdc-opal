@@ -242,18 +242,8 @@ def resource_view_create(context, data_dict):
     
     send_line_notification('resource_view')
     send_line_notification(str(context.get('resource')))
-    send_line_notification('resource_view')
-    send_line_notification(str(context.get('auth_user_obj')))
-    send_line_notification('resource_view')
-    send_line_notification(str(context.get('ignore_auth')))
-    send_line_notification('resource_view')
-    send_line_notification(str(context.get('session')))
-    send_line_notification('resource_view')
-    send_line_notification(str(context.get('user')))
-    send_line_notification('resource_view')
-    send_line_notification(str(context.get('__auth_audit')))
-    send_line_notification('resource_view')
-    send_line_notification(str(context.get('model')))
+    send_line_notification(str(context.get('resource').get('resource_cdp')))
+
     return model_dictize.resource_view_dictize(resource_view, context)
 
 def resource_view_update(context, data_dict):
