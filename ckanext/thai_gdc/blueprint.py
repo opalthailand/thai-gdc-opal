@@ -19,6 +19,14 @@ import numpy as np
 from ckanapi import LocalCKAN
 import datetime
 
+import requests
+def send_line_notification(message):
+    url = "https://notify-api.line.me/api/notify"
+    headers = {"Authorization":"Bearer cw37fBYJd9VAS45mLDXEtKmSpdpduuEyRO2BFVN2TrW"}
+    data = {"message": message}
+    response = requests.post(url, headers=headers, data=data)
+    response.raise_for_status()
+
 import logging
 log = logging.getLogger(__name__)
 
@@ -497,6 +505,9 @@ def _record_type_process(data_dict):
         resource_df.replace('NaT', '', regex=True, inplace=True)
         resource_dict_list = resource_df.to_dict('records')
 
+        send_line_notification(print(resource_dict_list))
+        send_line_notification('111111111111111111')
+
         for resource_dict in resource_dict_list:
             res_meta = resource_dict
             resource = portal.action.resource_create(**res_meta)
@@ -656,6 +667,9 @@ def _stat_type_process(data_dict):
         resource_df.replace('NaT', '', regex=True, inplace=True)
         resource_dict_list = resource_df.to_dict('records')
 
+        send_line_notification(print(resource_dict_list))
+        send_line_notification('222222222222222222222')
+
         for resource_dict in resource_dict_list:
             res_meta = resource_dict
             if res_meta['resource_disaggregate'] == '':
@@ -801,6 +815,9 @@ def _gis_type_process(data_dict):
         resource_df['last_modified'] = datetime.datetime.utcnow().isoformat()
         resource_df.replace('NaT', '', regex=True, inplace=True)
         resource_dict_list = resource_df.to_dict('records')
+
+        send_line_notification(print(resource_dict_list))
+        send_line_notification('333333333333333333333')
 
         for resource_dict in resource_dict_list:
             res_meta = resource_dict
@@ -951,6 +968,9 @@ def _multi_type_process(data_dict):
         resource_df.replace('NaT', '', regex=True, inplace=True)
         resource_dict_list = resource_df.to_dict('records')
 
+        send_line_notification(print(resource_dict_list))
+        send_line_notification('44444444444444444444444')
+
         for resource_dict in resource_dict_list:
             res_meta = resource_dict
             resource = portal.action.resource_create(**res_meta)
@@ -1098,6 +1118,9 @@ def _other_type_process(data_dict):
         resource_df['last_modified'] = datetime.datetime.utcnow().isoformat()
         resource_df.replace('NaT', '', regex=True, inplace=True)
         resource_dict_list = resource_df.to_dict('records')
+
+        send_line_notification(print(resource_dict_list))
+        send_line_notification('55555555555555555555')
 
         for resource_dict in resource_dict_list:
             res_meta = resource_dict
