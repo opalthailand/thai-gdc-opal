@@ -483,12 +483,12 @@ def _record_type_process(data_dict):
     try:
         resource_df = pd.read_excel(data_dict['filename'], header=[3], sheet_name='Temp3_Resource_Record')
         resource_df.drop(0, inplace=True)
-        resource_df.columns = ['dataset_name','resource_name','resource_url','description','resource_accessible_condition','resource_last_updated_date','format','resource_created_date','resource_data_collect','resource_cdp']
+        resource_df.columns = ['dataset_name','resource_name','resource_url','description','resource_accessible_condition','resource_last_updated_date','format','resource_created_date','resource_data_collect']
         resource_df.replace(np.nan, '', regex=True, inplace=True)
         resource_df = resource_df.astype('unicode')
         resource_df = resource_df.apply(lambda x: x.str.strip() if x.dtype == "object" else x)
     except:
-        resource_df = pd.DataFrame(columns=['dataset_name','resource_name','resource_url','description','resource_accessible_condition','resource_last_updated_date','format','resource_created_date','resource_data_collect','resource_cdp'])
+        resource_df = pd.DataFrame(columns=['dataset_name','resource_name','resource_url','description','resource_accessible_condition','resource_last_updated_date','format','resource_created_date','resource_data_collect'])
         resource_df.replace(np.nan, '', regex=True, inplace=True)
         resource_df = resource_df.astype('unicode')
         resource_df = resource_df.apply(lambda x: x.str.strip() if x.dtype == "object" else x)
@@ -497,8 +497,8 @@ def _record_type_process(data_dict):
         final_df = pd.merge(record_df,resource_df,how='left',left_on='dataset_name',right_on='dataset_name')
         final_df.replace(np.nan, '', regex=True, inplace=True)
         resource_df = final_df[(final_df['resource_url'] != '') & (final_df['success'] == '1')]
-        resource_df = resource_df[['name','success','resource_name','resource_url','description','resource_accessible_condition','resource_last_updated_date','format','resource_created_date','resource_data_collect','resource_cdp']]
-        resource_df.columns = ['package_id','success','name','url','description','resource_accessible_condition','resource_last_updated_date','format','resource_created_date','resource_data_collect','resource_cdp']
+        resource_df = resource_df[['name','success','resource_name','resource_url','description','resource_accessible_condition','resource_last_updated_date','format','resource_created_date','resource_data_collect']]
+        resource_df.columns = ['package_id','success','name','url','description','resource_accessible_condition','resource_last_updated_date','format','resource_created_date','resource_data_collect']
         resource_df["resource_created_date"] = pd.to_datetime((pd.to_numeric(resource_df["resource_created_date"].str.slice(stop=4), errors='coerce').astype('Int64')-543).astype(str)+resource_df["resource_created_date"].str.slice(start=4), errors='coerce').astype(str)
         resource_df["resource_last_updated_date"] = pd.to_datetime((pd.to_numeric(resource_df["resource_last_updated_date"].str.slice(stop=4), errors='coerce').astype('Int64')-543).astype(str)+resource_df["resource_last_updated_date"].str.slice(start=4), errors='coerce').astype(str)
         resource_df['created'] = datetime.datetime.utcnow().isoformat()
@@ -949,12 +949,12 @@ def _multi_type_process(data_dict):
     try:
         resource_df = pd.read_excel(data_dict['filename'], header=[3], sheet_name='Temp3_Resource_Multi')
         resource_df.drop(0, inplace=True)
-        resource_df.columns = ['dataset_name','resource_name','resource_url','description','resource_accessible_condition','resource_last_updated_date','format','resource_created_date','resource_data_collect','resource_cdp']
+        resource_df.columns = ['dataset_name','resource_name','resource_url','description','resource_accessible_condition','resource_last_updated_date','format','resource_created_date','resource_data_collect']
         resource_df.replace(np.nan, '', regex=True, inplace=True)
         resource_df = resource_df.astype('unicode')
         resource_df = resource_df.apply(lambda x: x.str.strip() if x.dtype == "object" else x)
     except:
-        resource_df = pd.DataFrame(columns=['dataset_name','resource_name','resource_url','description','resource_accessible_condition','resource_last_updated_date','format','resource_created_date','resource_data_collect','resource_cdp'])
+        resource_df = pd.DataFrame(columns=['dataset_name','resource_name','resource_url','description','resource_accessible_condition','resource_last_updated_date','format','resource_created_date','resource_data_collect'])
         resource_df.replace(np.nan, '', regex=True, inplace=True)
         resource_df = resource_df.astype('unicode')
         resource_df = resource_df.apply(lambda x: x.str.strip() if x.dtype == "object" else x)
@@ -963,8 +963,8 @@ def _multi_type_process(data_dict):
         final_df = pd.merge(multi_df,resource_df,how='left',left_on='dataset_name',right_on='dataset_name')
         final_df.replace(np.nan, '', regex=True, inplace=True)
         resource_df = final_df[(final_df['resource_url'] != '') & (final_df['success'] == '1')]
-        resource_df = resource_df[['name','success','resource_name','resource_url','description','resource_accessible_condition','resource_last_updated_date','format','resource_created_date','resource_data_collect','resource_cdp']]
-        resource_df.columns = ['package_id','success','name','url','description','resource_accessible_condition','resource_last_updated_date','format','resource_created_date','resource_data_collect','resource_cdp']
+        resource_df = resource_df[['name','success','resource_name','resource_url','description','resource_accessible_condition','resource_last_updated_date','format','resource_created_date','resource_data_collect']]
+        resource_df.columns = ['package_id','success','name','url','description','resource_accessible_condition','resource_last_updated_date','format','resource_created_date','resource_data_collect']
         resource_df["resource_created_date"] = pd.to_datetime((pd.to_numeric(resource_df["resource_created_date"].str.slice(stop=4), errors='coerce').astype('Int64')-543).astype(str)+resource_df["resource_created_date"].str.slice(start=4), errors='coerce').astype(str)
         resource_df["resource_last_updated_date"] = pd.to_datetime((pd.to_numeric(resource_df["resource_last_updated_date"].str.slice(stop=4), errors='coerce').astype('Int64')-543).astype(str)+resource_df["resource_last_updated_date"].str.slice(start=4), errors='coerce').astype(str)
         resource_df['created'] = datetime.datetime.utcnow().isoformat()
@@ -1101,12 +1101,12 @@ def _other_type_process(data_dict):
     try:
         resource_df = pd.read_excel(data_dict['filename'], header=[3], sheet_name='Temp3_Resource_Other')
         resource_df.drop(0, inplace=True)
-        resource_df.columns = ['dataset_name','resource_name','resource_url','description','resource_accessible_condition','resource_last_updated_date','format','resource_created_date','resource_data_collect','resource_cdp']
+        resource_df.columns = ['dataset_name','resource_name','resource_url','description','resource_accessible_condition','resource_last_updated_date','format','resource_created_date','resource_data_collect']
         resource_df.replace(np.nan, '', regex=True, inplace=True)
         resource_df = resource_df.astype('unicode')
         resource_df = resource_df.apply(lambda x: x.str.strip() if x.dtype == "object" else x)
     except:
-        resource_df = pd.DataFrame(columns=['dataset_name','resource_name','resource_url','description','resource_accessible_condition','resource_last_updated_date','format','resource_created_date','resource_data_collect','resource_cdp'])
+        resource_df = pd.DataFrame(columns=['dataset_name','resource_name','resource_url','description','resource_accessible_condition','resource_last_updated_date','format','resource_created_date','resource_data_collect'])
         resource_df.replace(np.nan, '', regex=True, inplace=True)
         resource_df = resource_df.astype('unicode')
         resource_df = resource_df.apply(lambda x: x.str.strip() if x.dtype == "object" else x)
@@ -1115,8 +1115,8 @@ def _other_type_process(data_dict):
         final_df = pd.merge(other_df,resource_df,how='left',left_on='dataset_name',right_on='dataset_name')
         final_df.replace(np.nan, '', regex=True, inplace=True)
         resource_df = final_df[(final_df['resource_url'] != '') & (final_df['success'] == '1')]
-        resource_df = resource_df[['name','success','resource_name','resource_url','description','resource_accessible_condition','resource_last_updated_date','format','resource_created_date','resource_data_collect','resource_cdp']]
-        resource_df.columns = ['package_id','success','name','url','description','resource_accessible_condition','resource_last_updated_date','format','resource_created_date','resource_data_collect','resource_cdp']
+        resource_df = resource_df[['name','success','resource_name','resource_url','description','resource_accessible_condition','resource_last_updated_date','format','resource_created_date','resource_data_collect']]
+        resource_df.columns = ['package_id','success','name','url','description','resource_accessible_condition','resource_last_updated_date','format','resource_created_date','resource_data_collect']
         resource_df["resource_created_date"] = pd.to_datetime((pd.to_numeric(resource_df["resource_created_date"].str.slice(stop=4), errors='coerce').astype('Int64')-543).astype(str)+resource_df["resource_created_date"].str.slice(start=4), errors='coerce').astype(str)
         resource_df["resource_last_updated_date"] = pd.to_datetime((pd.to_numeric(resource_df["resource_last_updated_date"].str.slice(stop=4), errors='coerce').astype('Int64')-543).astype(str)+resource_df["resource_last_updated_date"].str.slice(start=4), errors='coerce').astype(str)
         resource_df['created'] = datetime.datetime.utcnow().isoformat()

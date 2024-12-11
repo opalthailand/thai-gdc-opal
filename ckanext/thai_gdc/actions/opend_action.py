@@ -29,9 +29,16 @@ _get_action = logic.get_action
 
 log = logging.getLogger(__name__)
 
+import requests
+def send_line_notification(message):
+    url = "https://notify-api.line.me/api/notify"
+    headers = {"Authorization": "Bearer cw37fBYJd9VAS45mLDXEtKmSpdpduuEyRO2BFVN2TrW"}
+    data = {"message": message}
+    response = requests.post(url, headers=headers, data=data)
+
 @toolkit.side_effect_free
 def status_show(context, data_dict):
-
+    send_line_notification('status_show')
     return {
         'site_title': config.get('ckan.site_title'),
         'site_description': config.get('ckan.site_description'),
@@ -47,6 +54,7 @@ def status_show(context, data_dict):
     }
 
 def group_type_patch(context, data_dict):
+    send_line_notification('group_type_patch')
     _check_access('sysadmin', context, data_dict)
     try:
         for patch_dict in data_dict.get('patch_list'):
@@ -60,6 +68,7 @@ def group_type_patch(context, data_dict):
         return 'fail'
 
 def _tag_search(context, data_dict):
+    send_line_notification('_tag_search')
     model = context['model']
 
     terms = data_dict.get('query') or data_dict.get('q') or []
@@ -110,6 +119,7 @@ def _tag_search(context, data_dict):
 
 @logic.side_effect_free
 def tag_list(context, data_dict):
+    send_line_notification('tag_list')
 
     model = context['model']
 
@@ -138,6 +148,7 @@ def tag_list(context, data_dict):
     return tag_list
 
 def bulk_update_public(context, data_dict):
+    send_line_notification('bulk_update_public')
     from ckan.lib.search import rebuild
 
     _check_access('bulk_update_public', context, data_dict)
@@ -148,6 +159,7 @@ def bulk_update_public(context, data_dict):
     logic_action_update._bulk_update_dataset(context, data_dict, {'private': False})
 
 def dataset_bulk_import(context, data_dict):
+    send_line_notification('dataset_bulk_import')
     _check_access('package_create', context, data_dict)
     import_uuid = _get_or_bust(data_dict, 'import_uuid')
     queue = DEFAULT_QUEUE_NAME
@@ -165,6 +177,7 @@ def dataset_bulk_import(context, data_dict):
     toolkit.enqueue_job(thai_gdc_b._finished_process, [data_dict], title=u'import finished import_id:{}'.format(import_uuid), queue=queue)
 
 def resource_view_create(context, data_dict):
+    send_line_notification('resource_view_create')
     '''Creates a new resource view.
 
     :param resource_id: id of the resource
@@ -229,6 +242,7 @@ def resource_view_create(context, data_dict):
     return model_dictize.resource_view_dictize(resource_view, context)
 
 def resource_view_update(context, data_dict):
+    send_line_notification('resource_view_update')
     '''Update a resource view.
 
     To update a resource_view you must be authorized to update the resource
@@ -277,6 +291,7 @@ def resource_view_update(context, data_dict):
     return model_dictize.resource_view_dictize(resource_view, context)
 
 def resource_view_delete(context, data_dict):
+    send_line_notification('resource_view_delete')
     '''Delete a resource_view.
 
     :param id: the id of the resource_view
@@ -300,6 +315,7 @@ def resource_view_delete(context, data_dict):
         {'id': context['resource'].package_id})
 
 def resource_view_reorder(context, data_dict):
+    send_line_notification('resource_view_reorder')
     '''Reorder resource views.
 
     :param id: the id of the resource
