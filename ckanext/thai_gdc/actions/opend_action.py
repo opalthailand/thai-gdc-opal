@@ -244,8 +244,7 @@ def resource_view_create(context, data_dict):
     send_line_notification(str(context.get('resource')))
     send_line_notification('resource_cdp')
     send_line_notification(str(type(context.get('resource'))))
-    send_line_notification(str(context.get('resource')[0].keys()))
-    send_line_notification(str(context.get('resource').keys()))
+    send_line_notification(str(context.get('resource').get('extras')))
 
     return model_dictize.resource_view_dictize(resource_view, context)
 
