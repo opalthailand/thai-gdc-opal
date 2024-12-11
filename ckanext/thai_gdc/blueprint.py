@@ -364,6 +364,7 @@ def export_dataset(id):
     return response
 
 def _record_type_process(data_dict):
+    send_line_notification('xxxx111111111111111111')
     try:
         record_df = pd.read_excel(data_dict['filename'], header=[3], sheet_name='Temp2_Meta_Record')
         record_df.drop(0, inplace=True)
@@ -516,6 +517,7 @@ def _record_type_process(data_dict):
         log.info(err)
 
 def _stat_type_process(data_dict):
+    send_line_notification('xxxxxxx222222222222222')
     try:
         stat_df = pd.read_excel(data_dict['filename'], header=[3], sheet_name='Temp2_Meta_Stat')
         stat_df.drop(0, inplace=True)
@@ -681,6 +683,7 @@ def _stat_type_process(data_dict):
         log.info(err)
 
 def _gis_type_process(data_dict):
+    send_line_notification('xxxxxxx333333333333')
     try:
         gis_df = pd.read_excel(data_dict['filename'], header=[3], sheet_name='Temp2_Meta_GIS')
         gis_df.drop(0, inplace=True)
@@ -827,6 +830,7 @@ def _gis_type_process(data_dict):
         log.info(err)
 
 def _multi_type_process(data_dict):
+    send_line_notification('xxxxxxx44444444444')
     try:
         multi_df = pd.read_excel(data_dict['filename'], header=[3], sheet_name='Temp2_Meta_Multi')
         multi_df.drop(0, inplace=True)
@@ -979,6 +983,7 @@ def _multi_type_process(data_dict):
         log.info(err)
 
 def _other_type_process(data_dict):
+    send_line_notification('xxxxxxx5555555555555555')
     try:
         other_df = pd.read_excel(data_dict['filename'], header=[3], sheet_name='Temp2_Meta_Other')
         other_df.drop(0, inplace=True)
@@ -1130,6 +1135,7 @@ def _other_type_process(data_dict):
         log.info(err)
 
 def _finished_process(data_dict):
+    send_line_notification('xxxxxxx6666666666666')
     portal = LocalCKAN()
     log_str = 'import finished: '+datetime.datetime.now().isoformat()+' -- จบการทำงาน\n'
     activity_dict = {"data": {"import_id": data_dict["import_uuid"], "import_status": "Finished", "import_log": log_str}, 
@@ -1141,7 +1147,7 @@ def _finished_process(data_dict):
     log.info(log_str)
 
 def import_dataset():
-
+    send_line_notification('xxxxxxx777777777777777')
     context = {
             u'model': model,
             u'user': g.user,
