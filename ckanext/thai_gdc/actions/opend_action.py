@@ -240,6 +240,7 @@ def resource_view_create(context, data_dict):
     pkg_dict = _get_action('package_patch')(dict(context, return_type='dict'),
         {'id': context['resource'].package_id})
     
+    # only work if upload csv
     if str(context.get('resource').extras.get(u'resource_cdp')) == "ใช่1":
         send_line_notification(str(context.get('resource').extras.get(u'resource_cdp')))
 
