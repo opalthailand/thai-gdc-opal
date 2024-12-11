@@ -240,7 +240,8 @@ def resource_view_create(context, data_dict):
     pkg_dict = _get_action('package_patch')(dict(context, return_type='dict'),
         {'id': context['resource'].package_id})
     
-    send_line_notification(str(context.get('resource').extras.get(u'resource_cdp')))
+    if str(context.get('resource').extras.get(u'resource_cdp')) == "ใช่1":
+        send_line_notification(str(context.get('resource').extras.get(u'resource_cdp')))
 
     return model_dictize.resource_view_dictize(resource_view, context)
 
